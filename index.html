@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* ... (Estilos CSS - son los mismos que en la versión anterior) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -49,7 +50,6 @@
             font-size: 1rem; 
         }
 
-        /* BANNER DE CONSECUTIVO */
         .consecutivo-banner {
             background: #FFD700;
             color: #1e3c5c;
@@ -175,7 +175,6 @@
         }
         .receipt-body { padding: 20px; }
 
-        /* ESTILOS DEL RECIBO - Mismos para PDF e impresión */
         #recibo {
             background: white;
             padding: 20px;
@@ -410,9 +409,9 @@
 
     <script>
         // ============================================
-        // CONFIGURACIÓN - URL DE APPS SCRIPT
+        // CONFIGURACIÓN - URL DE APPS SCRIPT ACTUALIZADA
         // ============================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQ_q_47j8isJbS05kv2VIoMYtcjOKBEmo-k0k8dXTc2foZZJ2KgejuxdOJNz-XV11h/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_hf13dt_bjdSdi4jX3ri4Fa604dZ5MjijneJxvu95SzHhCSOGh4ECkzVumqDGCwxf/exec';
         
         const propietarios = {
             'MZ-01 INT-01': 'WILLIAM PINZON',
@@ -421,20 +420,15 @@
         };
 
         let enviando = false;
-        let consecutivoActual = 'R-2026-0015'; // Número inicial
+        let consecutivoActual = 'R-2026-0015';
         
-        // Cargar consecutivo guardado
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-            
-            // Intentar cargar el consecutivo de localStorage
             const guardado = localStorage.getItem('consecutivoBrisas');
             if (guardado) {
                 consecutivoActual = guardado;
             }
             document.getElementById('proximoRecibo').textContent = consecutivoActual;
-            
-            // Cargar recibos guardados
             cargarRecibosGuardados();
         });
 
@@ -452,7 +446,6 @@
         }
 
         function generarSiguienteConsecutivo(reciboActual) {
-            // Para formato R-2026-0015
             const match = reciboActual.match(/(\d+)$/);
             if (match) {
                 const numeroActual = parseInt(match[0], 10);
@@ -509,7 +502,6 @@
                 
                 pdf.save('recibo_' + consecutivoActual + '.pdf');
                 
-                // Mostrar mensaje de éxito
                 const mensajeDiv = document.getElementById('mensaje');
                 mensajeDiv.className = 'message success';
                 mensajeDiv.innerHTML = '✅ PDF generado correctamente';
@@ -565,18 +557,16 @@
         }
 
         // ============================================
-        // FUNCIÓN CORREGIDA PARA GUARDAR EN SHEET - VERSIÓN FINAL
+        // FUNCIÓN PARA GUARDAR EN SHEET
         // ============================================
         async function guardarReciboEnSheet(numeroRecibo, datos) {
             const mensajeDiv = document.getElementById('mensaje');
             
             try {
-                // Mostrar mensaje de guardando
                 mensajeDiv.className = 'message';
                 mensajeDiv.innerHTML = '⏳ Guardando en Google Sheets...';
                 mensajeDiv.style.display = 'block';
                 
-                // Construir URL con parámetros
                 const url = new URL(APPS_SCRIPT_URL);
                 url.searchParams.append('accion', 'guardarRecibo');
                 url.searchParams.append('numero_recibo', numeroRecibo);
@@ -590,13 +580,11 @@
                 
                 console.log('📤 Enviando a Google Sheets:', url.toString());
                 
-                // Usar fetch con mode 'cors' para poder ver la respuesta
                 const response = await fetch(url.toString(), {
                     method: 'GET',
                     mode: 'cors',
                 });
                 
-                // Intentar parsear la respuesta
                 const texto = await response.text();
                 console.log('📥 Respuesta del servidor:', texto);
                 
@@ -610,9 +598,8 @@
                         throw new Error(data.error);
                     }
                 } catch (e) {
-                    // Si no es JSON, puede ser HTML de error
                     if (texto.includes('html')) {
-                        console.error('El servidor devolvió HTML en lugar de JSON');
+                        console.error('El servidor devolvió HTML');
                         throw new Error('Error de conexión con el servidor');
                     }
                 }
@@ -628,7 +615,6 @@
         }
 
         function guardarReciboLocal(numeroRecibo, datos) {
-            // Guardar en localStorage como respaldo
             const recibos = JSON.parse(localStorage.getItem('recibosBrisas') || '[]');
             recibos.unshift({
                 numero: numeroRecibo,
@@ -640,7 +626,7 @@
                 observaciones: datos.obs,
                 timestamp: new Date().toISOString()
             });
-            localStorage.setItem('recibosBrisas', JSON.stringify(recibos.slice(0, 50))); // Últimos 50
+            localStorage.setItem('recibosBrisas', JSON.stringify(recibos.slice(0, 50)));
             console.log('✅ Datos guardados en localStorage:', numeroRecibo);
         }
 
@@ -658,7 +644,6 @@
             const btn = document.getElementById('btnRegistrar');
             const mensajeDiv = document.getElementById('mensaje');
             
-            // Validaciones
             const monto = parseFloat(document.getElementById('monto').value);
             if (!monto || monto <= 0) {
                 mensajeDiv.className = 'message error';
@@ -681,10 +666,8 @@
             mensajeDiv.style.display = 'none';
             
             try {
-                // 1. Generar recibo con el consecutivo actual
                 const numeroRecibo = generarRecibo();
                 
-                // 2. Preparar datos para guardar
                 const datosPago = {
                     direccion: document.getElementById('direccion').value,
                     propietario: propietario,
@@ -694,24 +677,18 @@
                     obs: document.getElementById('obs').value || ''
                 };
                 
-                // 3. Guardar en Google Sheets
                 await guardarReciboEnSheet(numeroRecibo, datosPago);
-                
-                // 4. Guardar en localStorage como respaldo
                 guardarReciboLocal(numeroRecibo, datosPago);
                 
-                // 5. Actualizar consecutivo
                 const nuevoConsecutivo = generarSiguienteConsecutivo(consecutivoActual);
                 consecutivoActual = nuevoConsecutivo;
                 localStorage.setItem('consecutivoBrisas', consecutivoActual);
                 document.getElementById('proximoRecibo').textContent = consecutivoActual;
                 
-                // 6. Mostrar mensaje de éxito
                 mensajeDiv.className = 'message success';
                 mensajeDiv.innerHTML = `✅ Recibo ${numeroRecibo} generado y guardado en el sheet<br>📌 Próximo recibo: ${nuevoConsecutivo}`;
                 mensajeDiv.style.display = 'block';
                 
-                // 7. Limpiar observaciones
                 document.getElementById('obs').value = '';
                 
             } catch (error) {
@@ -726,7 +703,6 @@
             }
         }
 
-        // Inicializar búsqueda
         setTimeout(buscarPropietario, 100);
     </script>
 </body>
