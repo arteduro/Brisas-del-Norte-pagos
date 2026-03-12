@@ -141,7 +141,32 @@
         .btn-primary:hover { background: #2a4f73; }
         .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        /* NUEVO BOTÓN DE REINICIO */
+        /* SECCIÓN DE REINICIO */
+        .reset-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .reset-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .reset-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .reset-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
         .btn-reset {
             background: #dc3545;
             color: white;
@@ -151,19 +176,27 @@
             border-radius: 30px;
             width: 100%;
             cursor: pointer;
-            margin: 10px 0 20px 0;
             font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            transition: all 0.3s;
         }
         .btn-reset:hover {
             background: #c82333;
+            transform: translateY(-2px);
         }
         .btn-reset:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+        }
+        .btn-reset-secondary {
+            background: #6c757d;
+        }
+        .btn-reset-secondary:hover {
+            background: #5a6268;
         }
 
         .message {
@@ -297,6 +330,7 @@
             .grid { grid-template-columns: 1fr; }
             .header { flex-direction: column; text-align: center; }
             .recibo-logo { flex-direction: column; text-align: center; }
+            .reset-input-group { flex-direction: column; }
         }
     </style>
 </head>
@@ -368,10 +402,30 @@
                         💾 REGISTRAR PAGO
                     </button>
 
-                    <!-- NUEVO BOTÓN DE REINICIO -->
-                    <button class="btn-reset" onclick="reiniciarContador()" id="btnReset">
-                        🔄 REINICIAR CONTADOR A R-2026-0001
-                    </button>
+                    <!-- ============================================ -->
+                    <!-- NUEVA SECCIÓN DE REINICIO CON VALOR PERSONALIZADO -->
+                    <!-- ============================================ -->
+                    <div class="reset-section">
+                        <div class="reset-title">🔧 HERRAMIENTAS DE PRUEBA</div>
+                        
+                        <!-- Campo para valor personalizado -->
+                        <div class="reset-input-group">
+                            <input type="text" id="valorReinicio" placeholder="Ej: R-2026-0001 o PRUEBA-001" value="R-2026-0001">
+                            <button class="btn-reset" onclick="reiniciarContadorPersonalizado()" id="btnReset">
+                                🔄 REINICIAR CONTADOR
+                            </button>
+                        </div>
+                        
+                        <!-- Botón para reiniciar a valor por defecto -->
+                        <button class="btn-reset btn-reset-secondary" onclick="reiniciarContadorDefault()" id="btnResetDefault" style="margin-top: 5px;">
+                            🔄 REINICIAR A R-2026-0001 (POR DEFECTO)
+                        </button>
+                        
+                        <!-- Botón para limpiar solo localStorage -->
+                        <button class="btn-reset btn-reset-secondary" onclick="limpiarLocalStorage()" id="btnLimpiar" style="margin-top: 5px; background: #17a2b8;">
+                            🗑️ LIMPIAR SOLO LOCALSTORAGE
+                        </button>
+                    </div>
 
                     <div id="mensaje" class="message"></div>
                 </div>
@@ -444,7 +498,7 @@
 
     <script>
         // ============================================
-        // CONFIGURACIÓN - URL DE APPS SCRIPT
+        // CONFIGURACIÓN
         // ============================================
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_hf13dt_bjdSdi4jX3ri4Fa604dZ5MjijneJxvu95SzHhCSOGh4ECkzVumqDGCwxf/exec';
         
@@ -574,7 +628,7 @@
                             margin: 0;
                             box-shadow: none;
                         }
-                        .btn-group, .receipt-header, .search-box, .form-group, .btn-primary, .btn-reset, .consecutivo-banner {
+                        .btn-group, .receipt-header, .search-box, .form-group, .btn-primary, .reset-section, .consecutivo-banner {
                             display: none !important;
                         }
                     </style>
@@ -593,16 +647,28 @@
         }
 
         // ============================================
-        // NUEVA FUNCIÓN: REINICIAR CONTADOR
+        // FUNCIONES DE REINICIO - CON VALOR PERSONALIZADO
         // ============================================
-        async function reiniciarContador() {
+        
+        // Función para reiniciar con valor personalizado
+        async function reiniciarContadorPersonalizado() {
             if (reseteando) return;
             
             const btnReset = document.getElementById('btnReset');
             const mensajeDiv = document.getElementById('mensaje');
+            const valorInput = document.getElementById('valorReinicio').value.trim();
+            
+            // Validar que no esté vacío
+            if (!valorInput) {
+                mensajeDiv.className = 'message error';
+                mensajeDiv.innerHTML = '❌ Por favor ingresa un valor para el contador';
+                mensajeDiv.style.display = 'block';
+                setTimeout(() => mensajeDiv.style.display = 'none', 3000);
+                return;
+            }
             
             // Confirmación de seguridad
-            const confirmar = confirm('⚠️ ¿Estás seguro de reiniciar el contador a R-2026-0001?\n\nEsto también limpiará el localStorage del navegador.');
+            const confirmar = confirm(`⚠️ ¿Estás seguro de reiniciar el contador a "${valorInput}"?\n\nEsto también limpiará el localStorage del navegador.`);
             if (!confirmar) return;
             
             reseteando = true;
@@ -616,21 +682,24 @@
                 localStorage.removeItem('recibosBrisas');
                 console.log('✅ LocalStorage limpiado');
                 
-                // 2. Reiniciar variable local
-                consecutivoActual = 'R-2026-0001';
+                // 2. Establecer nuevo valor
+                consecutivoActual = valorInput;
                 
-                // 3. Actualizar el banner
+                // 3. Guardar en localStorage
+                localStorage.setItem('consecutivoBrisas', consecutivoActual);
+                
+                // 4. Actualizar el banner
                 document.getElementById('proximoRecibo').textContent = consecutivoActual;
                 
-                // 4. Opcional: Ocultar el recibo si está visible
+                // 5. Ocultar el recibo si está visible
                 document.getElementById('reciboContainer').style.display = 'none';
                 
-                // 5. Mensaje de éxito
+                // 6. Mensaje de éxito
                 mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = '✅ Contador reiniciado a R-2026-0001. El localStorage ha sido limpiado.';
+                mensajeDiv.innerHTML = `✅ Contador reiniciado a "${consecutivoActual}". El localStorage ha sido actualizado.`;
                 mensajeDiv.style.display = 'block';
                 
-                // 6. Recargar la página después de 2 segundos para asegurar todo limpio
+                // 7. Recargar la página después de 2 segundos
                 setTimeout(() => {
                     location.reload();
                 }, 2000);
@@ -642,8 +711,42 @@
                 mensajeDiv.style.display = 'block';
                 
                 btnReset.disabled = false;
-                btnReset.innerHTML = '🔄 REINICIAR CONTADOR A R-2026-0001';
+                btnReset.innerHTML = '🔄 REINICIAR CONTADOR';
                 reseteando = false;
+            }
+        }
+
+        // Función para reiniciar a valor por defecto (R-2026-0001)
+        async function reiniciarContadorDefault() {
+            document.getElementById('valorReinicio').value = 'R-2026-0001';
+            await reiniciarContadorPersonalizado();
+        }
+
+        // Función para limpiar solo localStorage (sin cambiar el valor visible)
+        async function limpiarLocalStorage() {
+            const mensajeDiv = document.getElementById('mensaje');
+            
+            const confirmar = confirm('🗑️ ¿Estás seguro de limpiar el localStorage?\n\nEsto eliminará los datos temporales pero NO cambiará el contador visible.');
+            if (!confirmar) return;
+            
+            try {
+                localStorage.removeItem('consecutivoBrisas');
+                localStorage.removeItem('recibosBrisas');
+                console.log('✅ LocalStorage limpiado');
+                
+                mensajeDiv.className = 'message success';
+                mensajeDiv.innerHTML = '✅ localStorage limpiado correctamente. La página se recargará.';
+                mensajeDiv.style.display = 'block';
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mensajeDiv.className = 'message error';
+                mensajeDiv.innerHTML = '❌ Error al limpiar localStorage';
+                mensajeDiv.style.display = 'block';
             }
         }
 
