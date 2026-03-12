@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brisas del Norte - Registro de Pagos</title>
+    <!-- Librerías -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c5c 0%, #2a4f73 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .header {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .logo-container { 
+            width: 150px; 
+            height: 80px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-container img { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain; 
+        }
+        .header-text h1 { 
+            color: #1e3c5c; 
+            font-size: 1.8rem; 
+        }
+        .header-text p { 
+            color: #666; 
+            font-size: 1rem; 
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .card-header {
+            background: #1e3c5c;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .card-header img { 
+            max-width: 60px; 
+            max-height: 40px; 
+            object-fit: contain; 
+            filter: brightness(0) invert(1);
+        }
+        .card-body { padding: 20px; }
+
+        .search-box {
+            background: #f8fafd;
+            border: 2px solid #1e3c5c;
+            border-radius: 30px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        .search-box h3 { color: #1e3c5c; margin-bottom: 10px; }
+        .search-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        .search-input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #cbdbe9;
+            border-radius: 20px;
+        }
+        .search-input-group button {
+            background: #1e3c5c;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c4c6b;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d0dfee;
+            border-radius: 20px;
+        }
+
+        .btn-primary {
+            background: #1e3c5c;
+            color: white;
+            border: 1px solid #FFD700;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 30px;
+            width: 100%;
+            cursor: pointer;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .btn-primary:hover { background: #2a4f73; }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+            display: block;
+        }
+
+        .receipt-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+        }
+        .receipt-header {
+            background: #d32f2f;
+            color: white;
+            padding: 12px 15px;
+            text-align: center;
+        }
+        .receipt-body { padding: 20px; }
+
+        /* ESTILOS DEL RECIBO - Mismos para PDF e impresión */
+        #recibo {
+            background: white;
+            padding: 20px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            border: 2px solid #1e3c5c;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .recibo-logo { 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 15px;
+        }
+        .recibo-logo img { 
+            max-width: 100px; 
+            max-height: 45px; 
+            object-fit: contain; 
+        }
+        .recibo-logo h2 { 
+            color: #1e3c5c; 
+            font-size: 1rem; 
+            margin: 0;
+        }
+        .recibo-logo p { 
+            margin: 0; 
+            font-size: 0.7rem; 
+            color: #666; 
+        }
+        .recibo-info { margin: 15px 0; }
+        .recibo-linea {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+        .recibo-etiqueta { font-weight: bold; color: #1e3c5c; }
+        .recibo-valor { color: #333; }
+        .recibo-total {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            border-left: 4px solid #ffc107;
+        }
+        .recibo-letras { 
+            font-style: italic; 
+            text-align: center; 
+            color: #666; 
+            margin: 10px 0; 
+            font-size: 0.8rem;
+        }
+        .recibo-firma { margin-top: 20px; text-align: right; }
+        .linea-firma {
+            border-top: 1px solid #333;
+            width: 150px;
+            margin-left: auto;
+            margin-top: 5px;
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-pdf { 
+            flex: 1; 
+            background: #28a745; 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: 600;
+        }
+        .btn-print { 
+            flex: 1; 
+            background: #17a2b8; 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; text-align: center; }
+            .recibo-logo { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://i.postimg.cc/2yb3MyY0/LOGO-BRISAS-DEL-NORTE.png" 
+                     alt="Logo Brisas del Norte">
+            </div>
+            <div class="header-text">
+                <h1>CONJUNTO RESIDENCIAL CERRADO BRISAS DEL NORTE</h1>
+                <p>NIT: 807.003.209-3 · Personería Jurídica No.1646 - Dic 17/1993</p>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- FORMULARIO -->
+            <div class="card">
+                <div class="card-header">
+                    <img src="https://i.postimg.cc/2yb3MyY0/LOGO-BRISAS-DEL-NORTE.png" alt="Logo">
+                    <h2>REGISTRO DE PAGOS</h2>
+                </div>
+                <div class="card-body">
+                    <div class="search-box">
+                        <h3>🔍 Buscar dirección exacta</h3>
+                        <div class="search-input-group">
+                            <input type="text" id="searchInput" value="MZ-01 INT-01" placeholder="Ej: MZ-01 INT-01">
+                            <button onclick="buscarPropietario()">Buscar</button>
+                        </div>
+                        <div id="resultadoBusqueda" style="margin-top:10px; font-size:0.9rem;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🏠 Dirección exacta</label>
+                        <input type="text" id="direccion" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Propietario</label>
+                        <input type="text" id="propietario" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>💰 Monto pagado</label>
+                        <input type="number" id="monto" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Fecha de pago</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label>💳 Método de pago</label>
+                        <select id="metodo">
+                            <option>Efectivo</option>
+                            <option>Transferencia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>📝 Observaciones</label>
+                        <input type="text" id="obs" placeholder="EXTRA:50000, SANCION:20000, SALDO_FAVOR:20000">
+                    </div>
+
+                    <button class="btn-primary" onclick="procesarPago()" id="btnRegistrar">
+                        💾 REGISTRAR PAGO
+                    </button>
+
+                    <div id="mensaje" class="message"></div>
+                </div>
+            </div>
+
+            <!-- RECIBO -->
+            <div class="receipt-card" id="reciboContainer">
+                <div class="receipt-header">
+                    <h2>🧾 RECIBO DE PAGO</h2>
+                </div>
+                <div class="receipt-body">
+                    <div id="recibo">
+                        <div class="recibo-logo">
+                            <img src="https://i.postimg.cc/2yb3MyY0/LOGO-BRISAS-DEL-NORTE.png" 
+                                 alt="Logo Brisas del Norte">
+                            <div>
+                                <h2>CONJUNTO RESIDENCIAL CERRADO BRISAS DEL NORTE</h2>
+                                <p>NIT: 807.003.209-3 - Personería Jurídica No.1646 - Dic 17/1993</p>
+                            </div>
+                        </div>
+                        
+                        <div class="recibo-info">
+                            <div class="recibo-linea">
+                                <span class="recibo-etiqueta">No. Recibo:</span>
+                                <span class="recibo-valor" id="r_numero"></span>
+                            </div>
+                            <div class="recibo-linea">
+                                <span class="recibo-etiqueta">Fecha:</span>
+                                <span class="recibo-valor" id="r_fecha"></span>
+                            </div>
+                            <div class="recibo-linea">
+                                <span class="recibo-etiqueta">Recibimos de:</span>
+                                <span class="recibo-valor" id="r_propietario"></span>
+                            </div>
+                            <div class="recibo-linea">
+                                <span class="recibo-etiqueta">Dirección:</span>
+                                <span class="recibo-valor" id="r_direccion"></span>
+                            </div>
+                            <div class="recibo-linea">
+                                <span class="recibo-etiqueta">Método:</span>
+                                <span class="recibo-valor" id="r_metodo"></span>
+                            </div>
+                            <div class="recibo-linea">
+                                <span class="recibo-etiqueta">Observaciones:</span>
+                                <span class="recibo-valor" id="r_obs"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="recibo-total">
+                            <span>TOTAL PAGADO:</span>
+                            <span id="r_monto"></span>
+                        </div>
+                        
+                        <div class="recibo-letras" id="r_letras"></div>
+                        
+                        <div class="recibo-firma">
+                            <div>Recibí conforme,</div>
+                            <div class="linea-firma"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-pdf" onclick="generarPDF()">📥 DESCARGAR PDF</button>
+                        <button class="btn-print" onclick="imprimirRecibo()">🖨️ IMPRIMIR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxC4l1Jlu-VvNd8w2cIOdl5-Bu-5AReY3I-0EGx--cL8rC8suXk2THFiQWbHS2O6flG/exec';
+        
+        const propietarios = {
+            'MZ-01 INT-01': 'WILLIAM PINZON',
+            'MZ-01 INT-02': 'NOHEMI PEREZ',
+            'MZ-01 INT-03': 'OFFIR FLOREZ'
+        };
+
+        let enviando = false;
+        document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+
+        function buscarPropietario() {
+            const dir = document.getElementById('searchInput').value.trim().toUpperCase();
+            document.getElementById('direccion').value = dir;
+            document.getElementById('propietario').value = propietarios[dir] || 'NO REGISTRADO';
+            document.getElementById('resultadoBusqueda').innerHTML = propietarios[dir] ? 
+                '✅ ' + propietarios[dir] : '⚠️ Dirección no encontrada';
+        }
+
+        function numeroALetras(num) {
+            if (num === 0) return 'CERO PESOS';
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' PESOS';
+        }
+
+        function generarRecibo() {
+            const monto = parseFloat(document.getElementById('monto').value) || 0;
+            
+            document.getElementById('r_numero').innerText = 'R-' + Date.now();
+            document.getElementById('r_fecha').innerText = document.getElementById('fecha').value;
+            document.getElementById('r_propietario').innerText = document.getElementById('propietario').value;
+            document.getElementById('r_direccion').innerText = document.getElementById('direccion').value;
+            document.getElementById('r_monto').innerText = '$ ' + monto.toLocaleString('es-CO');
+            document.getElementById('r_letras').innerText = numeroALetras(monto);
+            document.getElementById('r_metodo').innerText = document.getElementById('metodo').value;
+            document.getElementById('r_obs').innerText = document.getElementById('obs').value || 'Ninguna';
+            
+            document.getElementById('reciboContainer').style.display = 'block';
+            document.getElementById('reciboContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function generarPDF() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ GENERANDO...';
+            
+            try {
+                const canvas = await html2canvas(document.getElementById('recibo'), { 
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: false,
+                    useCORS: true
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: [80, 150]
+                });
+                
+                const imgWidth = 70;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 5, 10, imgWidth, imgHeight);
+                
+                pdf.save('recibo.pdf');
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '📥 DESCARGAR PDF';
+        }
+
+        // 🔥 NUEVA VERSIÓN DE IMPRIMIR - Usa los mismos estilos que el PDF
+        function imprimirRecibo() {
+            // Obtener el contenido del recibo
+            const reciboHTML = document.getElementById('recibo').outerHTML;
+            
+            // Obtener los estilos CSS (los mismos que usa la página)
+            const estilos = document.querySelector('style').innerHTML;
+            
+            // Crear ventana de impresión con los mismos estilos
+            const ventana = window.open('', '_blank');
+            ventana.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Recibo de Pago - Brisas del Norte</title>
+                    <style>
+                        ${estilos}
+                        body { 
+                            padding: 20px; 
+                            max-width: 400px; 
+                            margin: 0 auto; 
+                            background: white;
+                        }
+                        #recibo {
+                            margin: 0;
+                            box-shadow: none;
+                        }
+                        .btn-group, .receipt-header, .search-box, .form-group, .btn-primary {
+                            display: none !important;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${reciboHTML}
+                </body>
+                </html>
+            `);
+            ventana.document.close();
+            ventana.focus();
+            
+            // Esperar a que carguen las imágenes y luego imprimir
+            setTimeout(() => {
+                ventana.print();
+            }, 500);
+        }
+
+        function procesarPago() {
+            if (enviando) return;
+            
+            const btn = document.getElementById('btnRegistrar');
+            const mensajeDiv = document.getElementById('mensaje');
+            
+            const monto = parseFloat(document.getElementById('monto').value);
+            if (!monto || monto <= 0) {
+                mensajeDiv.className = 'message error';
+                mensajeDiv.innerHTML = '❌ Ingrese un monto válido';
+                mensajeDiv.style.display = 'block';
+                return;
+            }
+            
+            enviando = true;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ PROCESANDO...';
+            mensajeDiv.style.display = 'none';
+            
+            const datos = new URLSearchParams();
+            datos.append('direccion', document.getElementById('direccion').value);
+            datos.append('propietario', document.getElementById('propietario').value);
+            datos.append('pago_mes', monto);
+            datos.append('fecha_pago', document.getElementById('fecha').value);
+            datos.append('metodo_pago', document.getElementById('metodo').value);
+            datos.append('observaciones', document.getElementById('obs').value);
+            
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: datos
+            }).catch(e => console.log('Error ignorado'));
+            
+            mensajeDiv.className = 'message success';
+            mensajeDiv.innerHTML = '✅ Pago registrado en Google Sheets';
+            mensajeDiv.style.display = 'block';
+            
+            generarRecibo();
+            
+            document.getElementById('monto').value = '';
+            document.getElementById('obs').value = '';
+            
+            btn.disabled = false;
+            btn.innerHTML = '💾 REGISTRAR PAGO';
+            enviando = false;
+        }
+
+        setTimeout(buscarPropietario, 100);
+    </script>
+</body>
+</html>
