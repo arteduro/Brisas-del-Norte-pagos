@@ -402,13 +402,10 @@
                         💾 REGISTRAR PAGO
                     </button>
 
-                    <!-- ============================================ -->
-                    <!-- NUEVA SECCIÓN DE REINICIO CON VALOR PERSONALIZADO -->
-                    <!-- ============================================ -->
+                    <!-- SECCIÓN DE REINICIO CON VALOR PERSONALIZADO -->
                     <div class="reset-section">
                         <div class="reset-title">🔧 HERRAMIENTAS DE PRUEBA</div>
                         
-                        <!-- Campo para valor personalizado -->
                         <div class="reset-input-group">
                             <input type="text" id="valorReinicio" placeholder="Ej: R-2026-0001 o PRUEBA-001" value="R-2026-0001">
                             <button class="btn-reset" onclick="reiniciarContadorPersonalizado()" id="btnReset">
@@ -416,14 +413,12 @@
                             </button>
                         </div>
                         
-                        <!-- Botón para reiniciar a valor por defecto -->
                         <button class="btn-reset btn-reset-secondary" onclick="reiniciarContadorDefault()" id="btnResetDefault" style="margin-top: 5px;">
-                            🔄 REINICIAR A R-2026-0001 (POR DEFECTO)
+                            🔄 REINICIAR A R-2026-0001
                         </button>
                         
-                        <!-- Botón para limpiar solo localStorage -->
                         <button class="btn-reset btn-reset-secondary" onclick="limpiarLocalStorage()" id="btnLimpiar" style="margin-top: 5px; background: #17a2b8;">
-                            🗑️ LIMPIAR SOLO LOCALSTORAGE
+                            🗑️ LIMPIAR LOCALSTORAGE
                         </button>
                     </div>
 
@@ -565,6 +560,9 @@
             return numeroRecibo;
         }
 
+        // ============================================
+        // FUNCIÓN MODIFICADA - PDF CON DIRECCIÓN + NOMBRE
+        // ============================================
         async function generarPDF() {
             const btn = event.target;
             btn.disabled = true;
@@ -590,11 +588,37 @@
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 pdf.addImage(imgData, 'PNG', 5, 10, imgWidth, imgHeight);
                 
-                pdf.save('recibo_' + consecutivoActual + '.pdf');
+                // ============================================
+                // FORMATO SOLICITADO: DIRECCIÓN + NOMBRE
+                // ============================================
+                const direccion = document.getElementById('direccion').value || 'SIN_DIRECCION';
+                const propietario = document.getElementById('propietario').value || 'DESCONOCIDO';
+                
+                // Limpiar la dirección
+                const direccionLimpia = direccion
+                    .trim()
+                    .replace(/\s+/g, ' ')           
+                    .replace(/[^\w\s-]/g, '')        
+                    .replace(/\s+/g, '_');            
+                
+                // Limpiar el nombre
+                const propietarioLimpio = propietario
+                    .trim()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/\s+/g, '_');
+                
+                // Formato: DIRECCIÓN_NOMBRE.pdf
+                const nombreArchivo = `${direccionLimpia}_${propietarioLimpio}.pdf`;
+                
+                pdf.save(nombreArchivo);
+                
+                console.log('✅ PDF guardado como:', nombreArchivo);
                 
                 const mensajeDiv = document.getElementById('mensaje');
                 mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = '✅ PDF generado correctamente';
+                mensajeDiv.innerHTML = `✅ PDF generado: ${nombreArchivo}`;
                 mensajeDiv.style.display = 'block';
                 setTimeout(() => mensajeDiv.style.display = 'none', 3000);
                 
@@ -647,10 +671,8 @@
         }
 
         // ============================================
-        // FUNCIONES DE REINICIO - CON VALOR PERSONALIZADO
+        // FUNCIONES DE REINICIO
         // ============================================
-        
-        // Función para reiniciar con valor personalizado
         async function reiniciarContadorPersonalizado() {
             if (reseteando) return;
             
@@ -658,17 +680,15 @@
             const mensajeDiv = document.getElementById('mensaje');
             const valorInput = document.getElementById('valorReinicio').value.trim();
             
-            // Validar que no esté vacío
             if (!valorInput) {
                 mensajeDiv.className = 'message error';
-                mensajeDiv.innerHTML = '❌ Por favor ingresa un valor para el contador';
+                mensajeDiv.innerHTML = '❌ Por favor ingresa un valor';
                 mensajeDiv.style.display = 'block';
                 setTimeout(() => mensajeDiv.style.display = 'none', 3000);
                 return;
             }
             
-            // Confirmación de seguridad
-            const confirmar = confirm(`⚠️ ¿Estás seguro de reiniciar el contador a "${valorInput}"?\n\nEsto también limpiará el localStorage del navegador.`);
+            const confirmar = confirm(`⚠️ ¿Reiniciar contador a "${valorInput}"?`);
             if (!confirmar) return;
             
             reseteando = true;
@@ -677,37 +697,24 @@
             mensajeDiv.style.display = 'none';
             
             try {
-                // 1. Limpiar localStorage
                 localStorage.removeItem('consecutivoBrisas');
                 localStorage.removeItem('recibosBrisas');
-                console.log('✅ LocalStorage limpiado');
                 
-                // 2. Establecer nuevo valor
                 consecutivoActual = valorInput;
-                
-                // 3. Guardar en localStorage
                 localStorage.setItem('consecutivoBrisas', consecutivoActual);
-                
-                // 4. Actualizar el banner
                 document.getElementById('proximoRecibo').textContent = consecutivoActual;
-                
-                // 5. Ocultar el recibo si está visible
                 document.getElementById('reciboContainer').style.display = 'none';
                 
-                // 6. Mensaje de éxito
                 mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = `✅ Contador reiniciado a "${consecutivoActual}". El localStorage ha sido actualizado.`;
+                mensajeDiv.innerHTML = `✅ Contador reiniciado a "${consecutivoActual}"`;
                 mensajeDiv.style.display = 'block';
                 
-                // 7. Recargar la página después de 2 segundos
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
+                setTimeout(() => location.reload(), 2000);
                 
             } catch (error) {
-                console.error('Error al reiniciar:', error);
+                console.error('Error:', error);
                 mensajeDiv.className = 'message error';
-                mensajeDiv.innerHTML = '❌ Error al reiniciar: ' + error.message;
+                mensajeDiv.innerHTML = '❌ Error al reiniciar';
                 mensajeDiv.style.display = 'block';
                 
                 btnReset.disabled = false;
@@ -716,36 +723,31 @@
             }
         }
 
-        // Función para reiniciar a valor por defecto (R-2026-0001)
         async function reiniciarContadorDefault() {
             document.getElementById('valorReinicio').value = 'R-2026-0001';
             await reiniciarContadorPersonalizado();
         }
 
-        // Función para limpiar solo localStorage (sin cambiar el valor visible)
         async function limpiarLocalStorage() {
             const mensajeDiv = document.getElementById('mensaje');
             
-            const confirmar = confirm('🗑️ ¿Estás seguro de limpiar el localStorage?\n\nEsto eliminará los datos temporales pero NO cambiará el contador visible.');
+            const confirmar = confirm('🗑️ ¿Limpiar localStorage?');
             if (!confirmar) return;
             
             try {
                 localStorage.removeItem('consecutivoBrisas');
                 localStorage.removeItem('recibosBrisas');
-                console.log('✅ LocalStorage limpiado');
                 
                 mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = '✅ localStorage limpiado correctamente. La página se recargará.';
+                mensajeDiv.innerHTML = '✅ localStorage limpiado';
                 mensajeDiv.style.display = 'block';
                 
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
+                setTimeout(() => location.reload(), 2000);
                 
             } catch (error) {
                 console.error('Error:', error);
                 mensajeDiv.className = 'message error';
-                mensajeDiv.innerHTML = '❌ Error al limpiar localStorage';
+                mensajeDiv.innerHTML = '❌ Error al limpiar';
                 mensajeDiv.style.display = 'block';
             }
         }
@@ -874,7 +876,7 @@
                 document.getElementById('proximoRecibo').textContent = consecutivoActual;
                 
                 mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = `✅ Recibo ${numeroRecibo} generado y guardado en el sheet<br>📌 Próximo recibo: ${nuevoConsecutivo}`;
+                mensajeDiv.innerHTML = `✅ Recibo ${numeroRecibo} generado<br>📌 Próximo: ${nuevoConsecutivo}`;
                 mensajeDiv.style.display = 'block';
                 
                 document.getElementById('obs').value = '';
