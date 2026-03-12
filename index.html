@@ -410,7 +410,7 @@
 
     <script>
         // ============================================
-        // CONFIGURACIÓN - CAMBIA ESTA URL POR LA TUYA
+        // CONFIGURACIÓN - URL DE APPS SCRIPT
         // ============================================
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQ_q_47j8isJbS05kv2VIoMYtcjOKBEmo-k0k8dXTc2foZZJ2KgejuxdOJNz-XV11h/exec';
         
@@ -565,12 +565,17 @@
         }
 
         // ============================================
-        // FUNCIÓN CORREGIDA PARA GUARDAR EN SHEET
+        // FUNCIÓN CORREGIDA PARA GUARDAR EN SHEET - VERSIÓN FINAL
         // ============================================
         async function guardarReciboEnSheet(numeroRecibo, datos) {
             const mensajeDiv = document.getElementById('mensaje');
             
             try {
+                // Mostrar mensaje de guardando
+                mensajeDiv.className = 'message';
+                mensajeDiv.innerHTML = '⏳ Guardando en Google Sheets...';
+                mensajeDiv.style.display = 'block';
+                
                 // Construir URL con parámetros
                 const url = new URL(APPS_SCRIPT_URL);
                 url.searchParams.append('accion', 'guardarRecibo');
@@ -581,28 +586,44 @@
                 url.searchParams.append('fecha', datos.fecha);
                 url.searchParams.append('metodo', datos.metodo);
                 url.searchParams.append('observaciones', datos.obs);
-                url.searchParams.append('timestamp', new Date().toISOString());
+                url.searchParams.append('timestamp', new Date().toLocaleString('es-CO'));
                 
-                // Usar fetch con mode 'no-cors' para evitar problemas de CORS
+                console.log('📤 Enviando a Google Sheets:', url.toString());
+                
+                // Usar fetch con mode 'cors' para poder ver la respuesta
                 const response = await fetch(url.toString(), {
-                    method: 'GET', // Cambiar a GET para no-cors
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
+                    method: 'GET',
+                    mode: 'cors',
                 });
                 
-                console.log('✅ Datos enviados a Google Sheets:', numeroRecibo);
+                // Intentar parsear la respuesta
+                const texto = await response.text();
+                console.log('📥 Respuesta del servidor:', texto);
                 
-                // Como usamos no-cors, no podemos ver la respuesta
-                // Pero asumimos que funciona
+                try {
+                    const data = JSON.parse(texto);
+                    if (data.success) {
+                        console.log('✅ Guardado exitoso en fila:', data.fila);
+                        return true;
+                    } else {
+                        console.error('❌ Error del servidor:', data.error);
+                        throw new Error(data.error);
+                    }
+                } catch (e) {
+                    // Si no es JSON, puede ser HTML de error
+                    if (texto.includes('html')) {
+                        console.error('El servidor devolvió HTML en lugar de JSON');
+                        throw new Error('Error de conexión con el servidor');
+                    }
+                }
                 
             } catch (error) {
-                console.error('Error al guardar en sheet:', error);
+                console.error('❌ Error al guardar en sheet:', error);
                 mensajeDiv.className = 'message error';
-                mensajeDiv.innerHTML = '⚠️ El recibo se generó pero hubo un error al guardar en el sheet';
+                mensajeDiv.innerHTML = '⚠️ Error al guardar en sheet: ' + error.message;
                 mensajeDiv.style.display = 'block';
                 setTimeout(() => mensajeDiv.style.display = 'none', 5000);
+                throw error;
             }
         }
 
@@ -629,7 +650,7 @@
         }
 
         // ============================================
-        // FUNCIÓN PRINCIPAL CORREGIDA
+        // FUNCIÓN PRINCIPAL
         // ============================================
         async function procesarPago() {
             if (enviando) return;
@@ -673,7 +694,7 @@
                     obs: document.getElementById('obs').value || ''
                 };
                 
-                // 3. Guardar en Google Sheets (AHORA SÍ FUNCIONA)
+                // 3. Guardar en Google Sheets
                 await guardarReciboEnSheet(numeroRecibo, datosPago);
                 
                 // 4. Guardar en localStorage como respaldo
@@ -690,14 +711,13 @@
                 mensajeDiv.innerHTML = `✅ Recibo ${numeroRecibo} generado y guardado en el sheet<br>📌 Próximo recibo: ${nuevoConsecutivo}`;
                 mensajeDiv.style.display = 'block';
                 
-                // 7. Limpiar campos (opcional, mantener monto para próximo pago)
+                // 7. Limpiar observaciones
                 document.getElementById('obs').value = '';
-                // document.getElementById('monto').value = ''; // Descomentar si quieres limpiar
                 
             } catch (error) {
                 console.error('Error en procesarPago:', error);
                 mensajeDiv.className = 'message error';
-                mensajeDiv.innerHTML = '❌ Error al procesar el pago';
+                mensajeDiv.innerHTML = '❌ Error al procesar el pago: ' + error.message;
                 mensajeDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
