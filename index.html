@@ -85,7 +85,6 @@
         }
         .card-body { padding: 20px; }
 
-        /* ESTILOS PARA SELECTORES MEJORADOS */
         .selector-principal {
             margin-bottom: 25px;
             background: #f0f7ff;
@@ -181,61 +180,75 @@
         }
         .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
+        /* SECCIÓN DE CONTROL SIMPLIFICADA */
         .reset-section {
             margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
+            padding: 20px;
+            background: #f0f7ff;
+            border-radius: 15px;
+            border: 2px solid #1e3c5c;
         }
         .reset-title {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 10px;
-            font-weight: 600;
+            color: #1e3c5c;
+            font-size: 1rem;
+            font-weight: 700;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .reset-input-group {
             display: flex;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .reset-input-group input {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            padding: 12px;
+            border: 2px solid #1e3c5c;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .reset-input-group input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
         }
         .btn-reset {
-            background: #dc3545;
+            background: #1e3c5c;
             color: white;
-            border: none;
-            padding: 10px 15px;
-            font-size: 0.9rem;
+            border: 1px solid #FFD700;
+            padding: 12px 20px;
+            font-size: 0.95rem;
             border-radius: 30px;
-            width: 100%;
             cursor: pointer;
             font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.3s;
+            white-space: nowrap;
         }
         .btn-reset:hover {
-            background: #c82333;
+            background: #2a4f73;
             transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         .btn-reset:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
-        .btn-reset-secondary {
-            background: #6c757d;
-        }
-        .btn-reset-secondary:hover {
-            background: #5a6268;
+        .reset-note {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 8px;
+            text-align: center;
+            font-style: italic;
         }
 
         .message {
@@ -253,12 +266,6 @@
             background: #f8d7da;
             color: #721c24;
             border-left: 4px solid #dc3545;
-            display: block;
-        }
-        .message.warning {
-            background: #fff3cd;
-            color: #856404;
-            border-left: 4px solid #ffc107;
             display: block;
         }
 
@@ -365,7 +372,6 @@
             font-weight: 600;
         }
 
-        /* Campos ocultos para almacenar datos */
         .hidden-fields {
             display: none;
         }
@@ -375,6 +381,7 @@
             .header { flex-direction: column; text-align: center; }
             .recibo-logo { flex-direction: column; text-align: center; }
             .reset-input-group { flex-direction: column; }
+            .btn-reset { width: 100%; }
         }
     </style>
 </head>
@@ -405,9 +412,7 @@
                     <h2>REGISTRO DE PAGOS</h2>
                 </div>
                 <div class="card-body">
-                    <!-- ============================================ -->
-                    <!-- SELECTOR DE PROPIETARIO (NOMBRE + DIRECCIÓN) -->
-                    <!-- ============================================ -->
+                    <!-- SELECTOR DE PROPIETARIO -->
                     <div class="selector-principal">
                         <label>👤 SELECCIONE EL PROPIETARIO</label>
                         <select id="selectorPropietario" onchange="cargarDatosPropietario()">
@@ -415,28 +420,22 @@
                         </select>
                     </div>
 
-                    <!-- ============================================ -->
-                    <!-- INFORMACIÓN DEL PROPIETARIO SELECCIONADO -->
-                    <!-- ============================================ -->
+                    <!-- INFORMACIÓN DEL PROPIETARIO -->
                     <div class="info-seleccion" id="infoPropietario">
                         <p><span class="etiqueta">Nombre:</span> <span id="infoNombre">---</span></p>
                         <p><span class="etiqueta">Dirección:</span> <span id="infoDireccion">---</span></p>
                     </div>
 
-                    <!-- ============================================ -->
-                    <!-- CAMPOS OCULTOS PARA EL RECIBO -->
-                    <!-- ============================================ -->
+                    <!-- CAMPOS OCULTOS -->
                     <div class="hidden-fields">
                         <input type="hidden" id="propietario" value="">
                         <input type="hidden" id="direccion" value="">
                     </div>
 
-                    <!-- ============================================ -->
-                    <!-- SELECTOR DE MES A PAGAR -->
-                    <!-- ============================================ -->
+                    <!-- SELECTOR DE MES -->
                     <div class="form-group">
                         <label>📅 SELECCIONE EL MES A PAGAR</label>
-                        <select id="mesPago" class="mes-selector">
+                        <select id="mesPago">
                             <option value="ENERO">ENERO</option>
                             <option value="FEBRERO">FEBRERO</option>
                             <option value="MARZO">MARZO</option>
@@ -457,7 +456,7 @@
                         <input type="number" id="monto" required>
                     </div>
                     <div class="form-group">
-                        <label>📅 Fecha de pago (hoy)</label>
+                        <label>📅 Fecha de pago</label>
                         <input type="date" id="fecha" required>
                     </div>
                     <div class="form-group">
@@ -476,23 +475,22 @@
                         💾 REGISTRAR PAGO
                     </button>
 
+                    <!-- SECCIÓN DE CONTROL SIMPLIFICADA -->
                     <div class="reset-section">
-                        <div class="reset-title">🔧 HERRAMIENTAS DE PRUEBA</div>
+                        <div class="reset-title">
+                            <i class="fas fa-sliders-h"></i> CONTROL DE CONSECUTIVO
+                        </div>
                         
                         <div class="reset-input-group">
                             <input type="text" id="valorReinicio" placeholder="Ej: R-2026-0001" value="R-2026-0001">
                             <button class="btn-reset" onclick="reiniciarContadorPersonalizado()" id="btnReset">
-                                🔄 REINICIAR
+                                <i class="fas fa-sync-alt"></i> REINICIAR
                             </button>
                         </div>
                         
-                        <button class="btn-reset btn-reset-secondary" onclick="reiniciarContadorDefault()" style="margin-top: 5px;">
-                            🔄 REINICIAR A R-2026-0001
-                        </button>
-                        
-                        <button class="btn-reset btn-reset-secondary" onclick="limpiarLocalStorage()" style="margin-top: 5px; background: #17a2b8;">
-                            🗑️ LIMPIAR LOCALSTORAGE
-                        </button>
+                        <div class="reset-note">
+                            Escribe el número deseado y haz clic en REINICIAR
+                        </div>
                     </div>
 
                     <div id="mensaje" class="message"></div>
@@ -977,7 +975,7 @@
         }
 
         // ============================================
-        // CARGAR DATOS DEL PROPIETARIO SELECCIONADO - CORREGIDA
+        // CARGAR DATOS DEL PROPIETARIO SELECCIONADO
         // ============================================
         function cargarDatosPropietario() {
             const select = document.getElementById('selectorPropietario');
@@ -989,20 +987,12 @@
                 const propietario = propietarios[direccion];
                 console.log('👤 Propietario encontrado:', propietario);
                 
-                // Actualizar campos ocultos (para el recibo)
                 document.getElementById('propietario').value = propietario;
                 document.getElementById('direccion').value = direccion;
                 
-                console.log('✅ Campos actualizados:', {
-                    propietario: document.getElementById('propietario').value,
-                    direccion: document.getElementById('direccion').value
-                });
-                
-                // Actualizar información visible
                 document.getElementById('infoNombre').textContent = propietario;
                 document.getElementById('infoDireccion').textContent = direccion;
                 
-                // Mostrar mensaje de éxito
                 document.getElementById('resultadoBusqueda').innerHTML = '✅ ' + propietario;
                 
             } else {
@@ -1033,9 +1023,6 @@
             return "R-2026-0001";
         }
 
-        // ============================================
-        // GENERAR RECIBO - CORREGIDA
-        // ============================================
         function generarRecibo() {
             console.log('📝 Generando recibo...');
             
@@ -1184,7 +1171,7 @@
         }
 
         // ============================================
-        // FUNCIONES DE REINICIO
+        // FUNCIÓN DE REINICIO SIMPLIFICADA
         // ============================================
         async function reiniciarContadorPersonalizado() {
             if (reseteando) return;
@@ -1231,37 +1218,8 @@
                 mensajeDiv.style.display = 'block';
                 
                 btnReset.disabled = false;
-                btnReset.innerHTML = '🔄 REINICIAR CONTADOR';
+                btnReset.innerHTML = '🔄 REINICIAR';
                 reseteando = false;
-            }
-        }
-
-        async function reiniciarContadorDefault() {
-            document.getElementById('valorReinicio').value = 'R-2026-0001';
-            await reiniciarContadorPersonalizado();
-        }
-
-        async function limpiarLocalStorage() {
-            const mensajeDiv = document.getElementById('mensaje');
-            
-            const confirmar = confirm('🗑️ ¿Limpiar localStorage?');
-            if (!confirmar) return;
-            
-            try {
-                localStorage.removeItem('consecutivoBrisas');
-                localStorage.removeItem('recibosBrisas');
-                
-                mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = '✅ localStorage limpiado';
-                mensajeDiv.style.display = 'block';
-                
-                setTimeout(() => location.reload(), 2000);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                mensajeDiv.className = 'message error';
-                mensajeDiv.innerHTML = '❌ Error al limpiar';
-                mensajeDiv.style.display = 'block';
             }
         }
 
@@ -1343,9 +1301,6 @@
             console.log('📊 Recibos guardados en localStorage:', recibos.length);
         }
 
-        // ============================================
-        // PROCESAR PAGO - CORREGIDA
-        // ============================================
         async function procesarPago() {
             if (enviando) return;
             
@@ -1428,5 +1383,3 @@
     </script>
 </body>
 </html>
-
-
