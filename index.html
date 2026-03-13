@@ -365,6 +365,11 @@
             font-weight: 600;
         }
 
+        /* Campos ocultos para almacenar datos */
+        .hidden-fields {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
             .header { flex-direction: column; text-align: center; }
@@ -416,6 +421,14 @@
                     <div class="info-seleccion" id="infoPropietario">
                         <p><span class="etiqueta">Nombre:</span> <span id="infoNombre">---</span></p>
                         <p><span class="etiqueta">Dirección:</span> <span id="infoDireccion">---</span></p>
+                    </div>
+
+                    <!-- ============================================ -->
+                    <!-- CAMPOS OCULTOS PARA EL RECIBO -->
+                    <!-- ============================================ -->
+                    <div class="hidden-fields">
+                        <input type="hidden" id="propietario" value="">
+                        <input type="hidden" id="direccion" value="">
                     </div>
 
                     <!-- ============================================ -->
@@ -565,362 +578,362 @@
         // BASE DE DATOS COMPLETA DE PROPIETARIOS
         // ============================================
         const propietarios = {
-    'MZ-01 INT-01': 'WILLIAM PINZON',
-    'MZ-01 INT-02': 'NOHEMI PEREZ',
-    'MZ-01 INT-03': 'OFFIR FLOREZ',
-    'MZ-01 INT-04': 'CRUZ GARCIA',
-    'MZ-01 INT-05': 'LUIS JESUS BOTELLO',
-    'MZ-01 INT-06': 'LUIS JESUS BOTELLO',
-    'MZ-01 INT-07': 'REINALDO ROJAS',
-    'MZ-01 INT-08': 'EDINSON CARRASCAL',
-    'MZ-01 INT-09': 'ALVARO DIAZ LAGUADO',
-    'MZ-01 INT-10': 'JOHANA OSORIO',
-    'MZ-02 INT-01': 'ABELARDO MARQUEZ',
-    'MZ-02 INT-02': 'NOHEMI MONCADA',
-    'MZ-02 INT-03': 'ELICINIA ROLON',
-    'MZ-02 INT-04': 'PABLO SANABRIA',
-    'MZ-02 INT-05': 'CRISTIAN TORRES',
-    'MZ-02 INT-06': 'CONSUELO BECERRA',
-    'MZ-02 INT-07': 'DORIS CASTELLANOS',
-    'MZ-02 INT-08': 'DIOSELINA CACERES',
-    'MZ-02 INT-09': 'MIGUEL GOMEZ',
-    'MZ-02 INT-10': 'NOHEMI MONCADA',
-    'MZ-02 INT-11': 'EDUARDO GOMEZ',
-    'MZ-02 INT-12': 'ADELSO CORTES',
-    'MZ-02 INT-13': 'IDALID SUELTA / MARLON VELASQUEZ',
-    'MZ-02 INT-14': 'DIEGO BERNAL',
-    'MZ-02 INT-15': 'JOSUE LUGO',
-    'MZ-02 INT-16': 'ABEL ANTONIO PARADA',
-    'MZ-02 INT-17': 'NANCY BLANCO',
-    'MZ-02 INT-18': 'CARMEN RODRIGUEZ',
-    'MZ-02 INT-19': 'GRACIELA RIVERA / REINALDO VERA',
-    'MZ-02 INT-20': 'ROSA ELCIDA CASTELLANOS',
-    'MZ-02 INT-21': 'ZENAIDA BOTELLO',
-    'MZ-02 INT-22': 'SULAY BUSTOS',
-    'MZ-02 INT-23': 'TERESA GARCIA',
-    'MZ-02 INT-24': 'RUBEN GOMEZ',
-    'MZ-02 INT-25': 'OSCAR IVAN CHACON',
-    'MZ-02 INT-26': 'CARLOS GRANADOS',
-    'MZ-02 INT-27': 'LUIS PINILLA',
-    'MZ-02 INT-28': 'RAFAEL FLORES',
-    'MZ-02 INT-29': '(Sin propietario)',
-    'MZ-03 INT-01': 'CARLOS IGUERA',
-    'MZ-03 INT-02': 'NANCY CONTRERAS',
-    'MZ-03 INT-03': 'CRUZ DELINA PARADA',
-    'MZ-03 INT-04': 'JORGE RANGEL',
-    'MZ-03 INT-05': 'GLADYS MELO',
-    'MZ-03 INT-06': 'ARBEY SARMIENTO',
-    'MZ-04 INT-01': 'JOSE GREGORIO SIERRA',
-    'MZ-04 INT-02': 'ANGELA RAMIREZ',
-    'MZ-04 INT-03': 'RAUL PEÑARANDA',
-    'MZ-04 INT-04': 'SAMUEL MARTINEZ',
-    'MZ-04 INT-05': 'IDULFO TARAZONA',
-    'MZ-04 INT-06': 'NUBIA TORRES',
-    'MZ-04 INT-07': 'SEBASTIAN VILLAMIZAR',
-    'MZ-04 INT-08': 'LUDY TRUJILLO',
-    'MZ-04 INT-09': 'CONSUELO BECERRA',
-    'MZ-04 INT-10': 'ANA RAMOS',
-    'MZ-05 INT-01': 'VALENTINA COTAMO',
-    'MZ-05 INT-02': 'JUDITH SANGUINO',
-    'MZ-05 INT-03': 'LUIS FERNANDO ORTEGA',
-    'MZ-05 INT-04': 'BLANCA HERNANDEZ',
-    'MZ-05 INT-05': 'LEIDY KARINA VANEGAS',
-    'MZ-05 INT-06': 'PATRICIA LAZARO CONTRERAS',
-    'MZ-05 INT-07': 'FREDDY DIAZ / NUBIA LOBO',
-    'MZ-05 INT-08': 'CARLOS AREVALO',
-    'MZ-05 INT-09': 'FABIO BARRIOS',
-    'MZ-06 INT-01': 'JULIAN GELVES',
-    'MZ-06 INT-02': 'MARLENI GONZALES',
-    'MZ-06 INT-03': 'RAUL CALDERON',
-    'MZ-06 INT-04': 'ROSALBA LOPEZ',
-    'MZ-06 INT-05': 'FRANCY MONTAÑO',
-    'MZ-06 INT-05-202': 'FRANCY MONTAÑO',
-    'MZ-06 INT-06': 'ERIKA BLANCO',
-    'MZ-06 INT-07': 'ZAIDA DAVILA FLOREZ',
-    'MZ-06 INT-08': 'CIRO MENDOZA',
-    'MZ-06 INT-09': 'LUIS CARLOS RODRIGUEZ',
-    'MZ-07 INT-01': 'ALEJANDRA MARTINEZ',
-    'MZ-07 INT-02': 'MARITZA PANQUEVA',
-    'MZ-07 INT-03': 'LEIDY XIOMARA PACHECO',
-    'MZ-07 INT-04': 'JOSE GREGORIO GELVEZ',
-    'MZ-07 INT-05': 'MARIELA MENESES',
-    'MZ-07 INT-06': 'GUILLERMINA CAMPOS',
-    'MZ-07 INT-07': 'GIOVANNY RAMIREZ',
-    'MZ-07 INT-08': 'JAIME DE LOS RIOS',
-    'MZ-07 INT-09': 'EMISAEL ASCANIO',
-    'MZ-07 INT-10': 'JESUS RANGEL',
-    'MZ-08 INT-01': 'GIOVANNI GARCIA',
-    'MZ-08 INT-02': 'JESUS DE MARIA RUIZ',
-    'MZ-08 INT-03': 'LORENA BOTELLO',
-    'MZ-08 INT-04': 'NIDIA JORDAN',
-    'MZ-08 INT-05': 'MARIA CARRILLO',
-    'MZ-08 INT-06': 'ANDREA FLOREZ',
-    'MZ-08 INT-07': 'LEONOR GALVIS',
-    'MZ-08 INT-08': 'MARTHA CECILIA MAYORGA',
-    'MZ-08 INT-09': 'ROBERTO ARMANDO GELVEZ',
-    'MZ-08 INT-10': 'VICTOR ALVAREZ',
-    'MZ-09 INT-01': 'WILMER RAMIREZ',
-    'MZ-09 INT-02': 'ESMERALDA ALVARADO',
-    'MZ-09 INT-03': 'ISMAEL ENRIQUE TORRADO',
-    'MZ-09 INT-04': 'CIRO BALMACEDA CASTILLA',
-    'MZ-11 INT-01': 'EDELFINA GIL',
-    'MZ-11 INT-02': 'GUSTAVO CASTILLA',
-    'MZ-11 INT-03': 'CARLOS QUINTERO',
-    'MZ-11 INT-03-1': 'JORGE JIMENEZ',
-    'MZ-11 INT-03-201': 'JORGE JIMENEZ',
-    'MZ-11 INT-04': 'MARIA DE LOS ANGELES ORTIZ',
-    'MZ-11 INT-05': 'JULIO HERNANDEZ',
-    'MZ-11 INT-06': 'LUDY COTE',
-    'MZ-11 INT-07': 'RUBEN ALBA',
-    'MZ-11 INT-08': 'CLARA BUITRAGO',
-    'MZ-11 INT-09': 'ANA CONTRERAS / ROBIN KELIN',
-    'MZ-11 INT-10': 'ANGEL BUITRAGO',
-    'MZ-11 INT-11': 'JOSE VALOIS',
-    'MZ-11 INT-12': 'MIRIAM HERNANDEZ',
-    'MZ-11 INT-13': 'MARIA ALEJANDRA MONCADA',
-    'MZ-12 INT-01': 'AZUCENA JAIMES',
-    'MZ-12 INT-02': 'CANDY ALEXANDRA ACEVEDO HERRERA',
-    'MZ-12 INT-03': 'MARITZA DUARTE',
-    'MZ-12 INT-04': 'DIANA AMAYA',
-    'MZ-12 INT-05': 'ESTELA CARDENAS',
-    'MZ-12 INT-06': 'LUCY CASTELLANOS',
-    'MZ-12 INT-07': 'MANUEL GONZALES',
-    'MZ-12 INT-08': 'BELCY PEÑALOZA',
-    'MZ-12 INT-09': 'FANNY RANGEL',
-    'MZ-12 INT-10': 'ALIRIO BELTRAN',
-    'MZ-12 INT-11': 'WILSON DURAN',
-    'MZ-12 INT-12': 'CONSUELO BECERRA',
-    'MZ-12 INT-13': 'ALIRIO PEREZ',
-    'MZ-12 INT-14': 'RUTH MARGARITA SANCHEZ',
-    'MZ-12 INT-15': 'MARIELA MENESES',
-    'MZ-12 INT-16': 'YANETH MANRIQUE',
-    'MZ-13 INT-01': 'DORIS MALAVER',
-    'MZ-13 INT-02': 'ROXANA LOZANO',
-    'MZ-13 INT-03': 'MARIA ISABEL RODRIGUEZ',
-    'MZ-13 INT-04': 'JAVIER GARZON',
-    'MZ-13 INT-05': 'MARIA DE LA CRUZ TORRES GARCIA',
-    'MZ-13 INT-06': 'LEIDY PEÑALOZA',
-    'MZ-13 INT-07': 'CARMEN CECILIA SANCHEZ',
-    'MZ-13 INT-08': 'IDULFO TARAZONA',
-    'MZ-13 INT-09': 'YESID HERNANDEZ',
-    'MZ-14 INT-01': 'CARLOS MENDOZA',
-    'MZ-14 INT-02': 'ROBERTO GALVIS',
-    'MZ-14 INT-03': 'GLADIS SOLIS',
-    'MZ-14 INT-04': 'MANUEL PINEDA',
-    'MZ-14 INT-05': 'ORLANDO FUYA',
-    'MZ-14 INT-06': 'SONIA LEON',
-    'MZ-14 INT-07': 'NUVIA ESTELLA GOMEZ SANDOVAL',
-    'MZ-14 INT-08': 'FABIO VELANDIA',
-    'MZ-14 INT-09': 'JOEL CORTEZ',
-    'MZ-14 INT-10': 'RUTH PEREZ',
-    'MZ-14 INT-11': 'EMILSE SANCHEZ',
-    'MZ-14 INT-12': 'MANUEL PINEDA',
-    'MZ-14 INT-13': 'DIOCELINA AYALA',
-    'MZ-14 INT-14': 'YANETH TORRADO',
-    'MZ-14 INT-15': 'ALFREDO AMAYA',
-    'MZ-14 INT-16': 'MANUEL PINEDA',
-    'MZ-15 INT-01': 'MARILCE PEREZ',
-    'MZ-15 INT-02': 'OSCAR CONTRERAS',
-    'MZ-15 INT-03': 'MARIBEL CABALLERO',
-    'MZ-15 INT-04': 'JESUS RIVERA',
-    'MZ-15 INT-05': 'ISABEL SANCHEZ SANCHEZ',
-    'MZ-15 INT-06': 'SONIA LEON MARTINEZ',
-    'MZ-15 INT-07': 'ESPERANZA LEAL',
-    'MZ-15 INT-08': 'ANA MARTINEZ',
-    'MZ-15 INT-09': 'WILLIAM SUESCUM',
-    'MZ-15 INT-10': 'ANA ROSA RIVERA PABON',
-    'MZ-16 INT-01': 'MARILCE PEREZ',
-    'MZ-16 INT-02': 'CONSUELO MARTINEZ/ARMANDO GUZMAN',
-    'MZ-16 INT-03': 'EDITH ESPITIA',
-    'MZ-16 INT-04': 'ELIANA GOMEZ',
-    'MZ-16 INT-05': 'LUIS HERNANDEZ',
-    'MZ-16 INT-06': 'OCTAVIO POLENTINO',
-    'MZ-16 INT-07': 'GREGORIO CONTRERAS',
-    'MZ-16 INT-08': 'FRANCELINA RAMIREZ',
-    'MZ-16 INT-09': 'PEDRO MORA',
-    'MZ-16 INT-10': 'ISMAEL CALIXTO',
-    'MZ-16 INT-11': 'JORGE VILLAMIL VILLAMIZAR',
-    'MZ-16 INT-12': 'OSCAR CONTRERAS',
-    'MZ-16 INT-13': 'JAVIER CONTRERAS',
-    'MZ-16 INT-14': 'FRANCY LOREIDEY SANCHEZ',
-    'MZ-16 INT-15': 'NORALBA PEREZ',
-    'MZ-16 INT-16': 'ZENAIDA TORRES',
-    'MZ-17 INT-01': 'ELBA CASTRO',
-    'MZ-17 INT-02': 'NOHEMI MONCADA',
-    'MZ-17 INT-03': 'CARMEN PEREZ',
-    'MZ-17 INT-04': 'CIRO DIAZ RODRIGUEZ',
-    'MZ-17 INT-05': 'LUCY PAYARES',
-    'MZ-17 INT-06': 'LINA ALBARRACIN',
-    'MZ-17 INT-07': 'MARIA ROSARIO RIZO',
-    'MZ-17 INT-08': 'ADRIANA DURAN',
-    'MZ-17 INT-09': 'EMELINDA TRIGOS',
-    'MZ-17 INT-10': 'ISABEL QUINTERO',
-    'MZ-18 INT-01': 'CLAUDIA QUIROZ',
-    'MZ-18 INT-02': 'JUAN PABLO AMAYA',
-    'MZ-18 INT-03': 'AURA MARIA SANTIAGO',
-    'MZ-18 INT-04': 'MAYRA SERRANO',
-    'MZ-18 INT-05': 'GREICY VILLAN',
-    'MZ-18 INT-06': 'ANIBAL VERA',
-    'MZ-18 INT-07': 'JUAN CARLOS CAMACHO',
-    'MZ-18 INT-08': 'ANA DOLORES REYES',
-    'MZ-18 INT-09': 'LINA ALBARRACIN',
-    'MZ-18 INT-10': 'MARTHA CANO',
-    'MZ-18 INT-11': 'WILLIAM TORRES',
-    'MZ-18 INT-12': 'ALVARO DELGADO',
-    'MZ-18 INT-13': 'ALVARO DELGADO',
-    'MZ-18 INT-14': 'JUAN LEON',
-    'MZ-18 INT-15': 'HERNAN ALFONSO ARIZA',
-    'MZ-18 INT-16': 'GLADIS BELEN IBARRA',
-    'MZ-19 INT-01': 'MARIA EUGENIA RODRIGUEZ',
-    'MZ-19 INT-02': 'ESPERANZA VILLAMIZAR',
-    'MZ-19 INT-03': 'CARMEN ELVIRA GONZALEZ',
-    'MZ-19 INT-04': 'ELIODORO RODRIGUEZ PABON',
-    'MZ-19 INT-05': 'MICHEL TRUJILLO',
-    'MZ-19 INT-06': 'KATHERINE TORRES',
-    'MZ-19 INT-07': 'GLADIS CHONA',
-    'MZ-19 INT-08': 'LUIS RAMON PALENCIA',
-    'MZ-19 INT-09': 'JAIRO LOBO',
-    'MZ-19 INT-10': 'ANA ELBA DIAZ',
-    'MZ-19 INT-11': 'YANET SUESCUM',
-    'MZ-19 INT-12': 'DAGOBERTO AMAYA',
-    'MZ-19 INT-13': 'ROSA DURAN',
-    'MZ-19 INT-14': 'DORIS GONZALES',
-    'MZ-19 INT-15': 'ANA OLIVA RAMOS',
-    'MZ-19 INT-16': 'CONSUELO BECERRA',
-    'MZ-20 INT-01': 'JAIRO AGRINZONES',
-    'MZ-20 INT-02': 'BEATRIZ CASTELLANOS',
-    'MZ-20 INT-03': 'ALFREDO OMAÑA',
-    'MZ-20 INT-04': 'CRISTIAN VERA',
-    'MZ-20 INT-05': 'WILSON BOLIVAR',
-    'MZ-20 INT-06': 'YOLIMAR MONCADA',
-    'MZ-20 INT-07': 'MARCELINA RIDRIGUEZ',
-    'MZ-21 INT-01': 'EUCARIS CAMPO',
-    'MZ-21 INT-02': 'ELIZABETH ANTELIZ',
-    'MZ-21 INT-03': 'ALBERTO DUQUE',
-    'MZ-21 INT-04': 'NEHEMIAS GUTIERREZ',
-    'MZ-21 INT-05': 'HUGO BRICEÑO',
-    'MZ-21 INT-06': 'CARMEN ROSA PARADA C',
-    'MZ-21 INT-07': 'DIANA CALIXTO',
-    'MZ-21 INT-08': 'JULIE DISNEY PORTILLO',
-    'MZ-21 INT-09': 'ALIX CASTELLANOS',
-    'MZ-21 INT-10': 'HUGO LEON',
-    'MZ-21 INT-11': 'ANA OLIVA RAMOS',
-    'MZ-21 INT-12': 'ARACELI MERCHAN',
-    'MZ-21 INT-13': 'ALBA SILVA',
-    'MZ-22 INT-01': 'MARINA OJEDA',
-    'MZ-22 INT-02': 'MARIA VALVINA VERA',
-    'MZ-22 INT-03': 'CARLOS JULIO ALVARES',
-    'MZ-22 INT-04': 'ANDRES LOPEZ',
-    'MZ-22 INT-05': 'EDUARDO ROLON',
-    'MZ-22 INT-06': 'GRACIELA DUQUE',
-    'MZ-22 INT-07': 'CRISTIAN GRANADOS',
-    'MZ-22 INT-08': 'ESPERANZA CORDERO',
-    'MZ-22 INT-09': 'VANESSA SANTIAGO / RONNY AVENDAÑO',
-    'MZ-22 INT-10': 'JORGE SANTIAGO',
-    'MZ-22 INT-11': 'MARTHA SANCHEZ',
-    'MZ-22 INT-12': 'NUBIA MARIA SANDOVAL',
-    'MZ-23 INT-01': 'ALFONSO ZAMBRANO',
-    'MZ-23 INT-02': 'CARLOS FLOREZ',
-    'MZ-23 INT-03': 'CARMEN ROSA CALIXTO',
-    'MZ-23 INT-03-201': 'CARMEN ROSA CALIXTO',
-    'MZ-23 INT-03-301': 'ING CELIS',
-    'MZ-23 INT-04': 'JOSE VARGAS',
-    'MZ-23 INT-05': 'JOSE ALIRIO PEDRAZA',
-    'MZ-23 INT-06': 'ELIECER JACOME',
-    'MZ-23 INT-07': 'ORLANDO DELGADO',
-    'MZ-23 INT-08': 'NORAIMA GOMEZ',
-    'MZ-23 INT-09': 'LEIDY KARINA VANEGAS',
-    'MZ-23 INT-10': 'SANDRA DUARTE',
-    'MZ-23 INT-11': 'NUBIA CASTELLANOS',
-    'MZ-23 INT-12': 'MARLENE CONTRERAS',
-    'MZ-24 INT-01': 'YULLI BOLIVAR',
-    'MZ-24 INT-02': 'HUMBERTO MEZA',
-    'MZ-24 INT-03': 'ADRIANA ZAMBRANO',
-    'MZ-24 INT-04': 'OMAIRA CASTELLANOS',
-    'MZ-24 INT-05': 'LUIS CORREA',
-    'MZ-24 INT-06': 'JORGE ENRIQUE MENDOZA',
-    'MZ-24 INT-07': 'ANA CECILIA SOLANO',
-    'MZ-24 INT-08': 'CARMEN EMILIA VELASCO',
-    'MZ-24 INT-09': 'WILLIAN SARMIENTO',
-    'MZ-24 INT-10': 'LORENA PEREZ',
-    'MZ-24 INT-11': 'GLADIS MOLINA',
-    'MZ-24 INT-12': 'NUBIA CASTELLANOS',
-    'MZ-24 INT-13': 'VICTOR CASTELLANOS',
-    'MZ-25 INT-01': 'ANA CONTRERAS',
-    'MZ-25 INT-02': 'TERESA SARMIENTO',
-    'MZ-25 INT-03': 'LIGIA CONTRERAS',
-    'MZ-25 INT-04': 'PATRICIA CACIQUE',
-    'MZ-25 INT-05': 'JOSE DE LA CRUZ DIAZ',
-    'MZ-25 INT-06': 'GLIDO GUIZA',
-    'MZ-26 INT-01': 'MARIA ALEJANDRA SILVA',
-    'MZ-26 INT-02': 'MARIAM SANTIAGO',
-    'MZ-26 INT-03': 'CRISTOBAL MONCADA',
-    'MZ-26 INT-04': 'MARIA FERNANDA GONZALEZ',
-    'MZ-26 INT-05': 'LUZ ELENA DIAZ',
-    'MZ-26 INT-06': 'NANCY RODRIGUEZ',
-    'MZ-26 INT-07': 'INGRI GRISALES',
-    'MZ-26 INT-08': 'EVA VASQUEZ',
-    'MZ-26 INT-09': 'ASTRID ORTEGA',
-    'MZ-26 INT-10': 'GERMAN CELIS',
-    'MZ-26 INT-11': 'ROSA ELENA ROSO',
-    'MZ-26 INT-12': 'ISMAEL CALIXTO',
-    'MZ-27 INT-01': 'OSCAR ALBERTO PEÑARANDA',
-    'MZ-27 INT-02': 'LEONOR PEREZ',
-    'MZ-27 INT-03': 'SANDRA VELASQUEZ',
-    'MZ-27 INT-04': 'LORENA TORRES RAMIRES',
-    'MZ-27 INT-05': 'PEDRO SANCHEZ GONZALES',
-    'MZ-27 INT-06': 'ROSALBA PARADA',
-    'MZ-27 INT-07': 'MARY LUZ LARROTA',
-    'MZ-27 INT-08': 'CARLOS CASTILLO',
-    'MZ-27 INT-09': 'EFIGENIA BENAVIDES',
-    'MZ-28 INT-01': 'MILLER FERNANDO RINCON',
-    'MZ-28 INT-02': 'MARIA CRISTINA FLOREZ',
-    'MZ-28 INT-03': 'CASILDA CELIS',
-    'MZ-28 INT-04': 'OSCAR MORANTES',
-    'MZ-28 INT-05': 'OFELIA / ROBERTO GALVIS ACTUALIZAR',
-    'MZ-28 INT-06': 'CARMEN PEREZ',
-    'MZ-28 INT-07': 'GERALDIN RODRIGUEZ',
-    'MZ-28 INT-08': 'TERESA FLORES',
-    'MZ-28 INT-09': 'VICTOR MENDOZA',
-    'MZ-28 INT-10': 'LUZ MARINA HERRERA',
-    'MZ-28 INT-11': 'EMERITA PUENTES',
-    'MZ-28 INT-12': 'ANA CECILIA SOLANO',
-    'MZ-28 INT-13': 'ALFONSO BECERRA',
-    'MZ-29 INT-01': 'OMAR AVELLANEDA',
-    'MZ-29 INT-02': 'MARIA ANTONIA WALTEROS',
-    'MZ-29 INT-03': 'JOSE VICENTE CORTEZ / AURELIA ORTIZ',
-    'MZ-29 INT-04': 'GUSTAVO SOLANO',
-    'MZ-29 INT-05': 'JOSE ROJAS MARTINEZ',
-    'MZ-29 INT-06': 'MARLENY VELASQUEZ',
-    'MZ-29 INT-07': 'CRISTINA PEREZ',
-    'MZ-29 INT-08': 'MARTA STELLA DELGADO',
-    'MZ-29 INT-09': 'GRICELDA BECERRA',
-    'MZ-29 INT-10': 'SIMON BOLIVAR',
-    'MZ-29 INT-11': 'NELSON ADOLFO NUNCIRA CARDENAS',
-    'MZ-29 INT-12': 'FABIOLA ARENAS',
-    'MZ-29 INT-13': 'NUBIA COMBARIZA',
-    'MZ-30 INT-01': 'ELIODORO RODRIGUEZ PABON',
-    'MZ-30 INT-02': 'JESUS MORA',
-    'MZ-30 INT-03': 'EDUARDO MEDINA',
-    'MZ-30 INT-04': 'LEONOR MEDINA',
-    'MZ-30 INT-05': 'JOCKSAN AGUIAR',
-    'MZ-30 INT-06': 'MARIA OLIVA MORGADO / EDGAR DANIEL ROLON CARRILLO',
-    'MZ-30 INT-07': 'GUSTAVO TRUJILLO',
-    'MZ-30 INT-08': 'ZENAIDA LAGOS',
-    'MZ-30 INT-09': 'JAVIER SANDOVAL',
-    'MZ-30 INT-10': 'LUZ ESTELA NIÑO',
-    'MZ-30 INT-11': 'NOHORA RINCON',
-    'MZ-30 INT-12': 'MARLENY RINCON RAMIREZ',
-    'MZ-30 INT-13': 'WILMAR JESUS PARADA GOMEZ',
-    'MZ-31 INT-01': 'LILIANA JARAMILLO',
-    'MZ-31 INT-02': 'NUBIA LOZANO',
-    'MZ-31 INT-03': 'RICHARD CASADIEGOS',
-    'MZ-31 INT-04': 'NIDIA AMAYA',
-    'MZ-31 INT-05': 'DIEGO CAICEDO',
-    'MZ-31 INT-06': 'ANA MARIA CONTRERAS GALVIS',
-    'MZ-31 INT-07': 'SONIA GARCIA',
-    'MZ-31 INT-08': 'IRENE PALACIO'
-};
+            'MZ-01 INT-01': 'WILLIAM PINZON',
+            'MZ-01 INT-02': 'NOHEMI PEREZ',
+            'MZ-01 INT-03': 'OFFIR FLOREZ',
+            'MZ-01 INT-04': 'CRUZ GARCIA',
+            'MZ-01 INT-05': 'LUIS JESUS BOTELLO',
+            'MZ-01 INT-06': 'LUIS JESUS BOTELLO',
+            'MZ-01 INT-07': 'REINALDO ROJAS',
+            'MZ-01 INT-08': 'EDINSON CARRASCAL',
+            'MZ-01 INT-09': 'ALVARO DIAZ LAGUADO',
+            'MZ-01 INT-10': 'JOHANA OSORIO',
+            'MZ-02 INT-01': 'ABELARDO MARQUEZ',
+            'MZ-02 INT-02': 'NOHEMI MONCADA',
+            'MZ-02 INT-03': 'ELICINIA ROLON',
+            'MZ-02 INT-04': 'PABLO SANABRIA',
+            'MZ-02 INT-05': 'CRISTIAN TORRES',
+            'MZ-02 INT-06': 'CONSUELO BECERRA',
+            'MZ-02 INT-07': 'DORIS CASTELLANOS',
+            'MZ-02 INT-08': 'DIOSELINA CACERES',
+            'MZ-02 INT-09': 'MIGUEL GOMEZ',
+            'MZ-02 INT-10': 'NOHEMI MONCADA',
+            'MZ-02 INT-11': 'EDUARDO GOMEZ',
+            'MZ-02 INT-12': 'ADELSO CORTES',
+            'MZ-02 INT-13': 'IDALID SUELTA / MARLON VELASQUEZ',
+            'MZ-02 INT-14': 'DIEGO BERNAL',
+            'MZ-02 INT-15': 'JOSUE LUGO',
+            'MZ-02 INT-16': 'ABEL ANTONIO PARADA',
+            'MZ-02 INT-17': 'NANCY BLANCO',
+            'MZ-02 INT-18': 'CARMEN RODRIGUEZ',
+            'MZ-02 INT-19': 'GRACIELA RIVERA / REINALDO VERA',
+            'MZ-02 INT-20': 'ROSA ELCIDA CASTELLANOS',
+            'MZ-02 INT-21': 'ZENAIDA BOTELLO',
+            'MZ-02 INT-22': 'SULAY BUSTOS',
+            'MZ-02 INT-23': 'TERESA GARCIA',
+            'MZ-02 INT-24': 'RUBEN GOMEZ',
+            'MZ-02 INT-25': 'OSCAR IVAN CHACON',
+            'MZ-02 INT-26': 'CARLOS GRANADOS',
+            'MZ-02 INT-27': 'LUIS PINILLA',
+            'MZ-02 INT-28': 'RAFAEL FLORES',
+            'MZ-02 INT-29': '(Sin propietario)',
+            'MZ-03 INT-01': 'CARLOS IGUERA',
+            'MZ-03 INT-02': 'NANCY CONTRERAS',
+            'MZ-03 INT-03': 'CRUZ DELINA PARADA',
+            'MZ-03 INT-04': 'JORGE RANGEL',
+            'MZ-03 INT-05': 'GLADYS MELO',
+            'MZ-03 INT-06': 'ARBEY SARMIENTO',
+            'MZ-04 INT-01': 'JOSE GREGORIO SIERRA',
+            'MZ-04 INT-02': 'ANGELA RAMIREZ',
+            'MZ-04 INT-03': 'RAUL PEÑARANDA',
+            'MZ-04 INT-04': 'SAMUEL MARTINEZ',
+            'MZ-04 INT-05': 'IDULFO TARAZONA',
+            'MZ-04 INT-06': 'NUBIA TORRES',
+            'MZ-04 INT-07': 'SEBASTIAN VILLAMIZAR',
+            'MZ-04 INT-08': 'LUDY TRUJILLO',
+            'MZ-04 INT-09': 'CONSUELO BECERRA',
+            'MZ-04 INT-10': 'ANA RAMOS',
+            'MZ-05 INT-01': 'VALENTINA COTAMO',
+            'MZ-05 INT-02': 'JUDITH SANGUINO',
+            'MZ-05 INT-03': 'LUIS FERNANDO ORTEGA',
+            'MZ-05 INT-04': 'BLANCA HERNANDEZ',
+            'MZ-05 INT-05': 'LEIDY KARINA VANEGAS',
+            'MZ-05 INT-06': 'PATRICIA LAZARO CONTRERAS',
+            'MZ-05 INT-07': 'FREDDY DIAZ / NUBIA LOBO',
+            'MZ-05 INT-08': 'CARLOS AREVALO',
+            'MZ-05 INT-09': 'FABIO BARRIOS',
+            'MZ-06 INT-01': 'JULIAN GELVES',
+            'MZ-06 INT-02': 'MARLENI GONZALES',
+            'MZ-06 INT-03': 'RAUL CALDERON',
+            'MZ-06 INT-04': 'ROSALBA LOPEZ',
+            'MZ-06 INT-05': 'FRANCY MONTAÑO',
+            'MZ-06 INT-05-202': 'FRANCY MONTAÑO',
+            'MZ-06 INT-06': 'ERIKA BLANCO',
+            'MZ-06 INT-07': 'ZAIDA DAVILA FLOREZ',
+            'MZ-06 INT-08': 'CIRO MENDOZA',
+            'MZ-06 INT-09': 'LUIS CARLOS RODRIGUEZ',
+            'MZ-07 INT-01': 'ALEJANDRA MARTINEZ',
+            'MZ-07 INT-02': 'MARITZA PANQUEVA',
+            'MZ-07 INT-03': 'LEIDY XIOMARA PACHECO',
+            'MZ-07 INT-04': 'JOSE GREGORIO GELVEZ',
+            'MZ-07 INT-05': 'MARIELA MENESES',
+            'MZ-07 INT-06': 'GUILLERMINA CAMPOS',
+            'MZ-07 INT-07': 'GIOVANNY RAMIREZ',
+            'MZ-07 INT-08': 'JAIME DE LOS RIOS',
+            'MZ-07 INT-09': 'EMISAEL ASCANIO',
+            'MZ-07 INT-10': 'JESUS RANGEL',
+            'MZ-08 INT-01': 'GIOVANNI GARCIA',
+            'MZ-08 INT-02': 'JESUS DE MARIA RUIZ',
+            'MZ-08 INT-03': 'LORENA BOTELLO',
+            'MZ-08 INT-04': 'NIDIA JORDAN',
+            'MZ-08 INT-05': 'MARIA CARRILLO',
+            'MZ-08 INT-06': 'ANDREA FLOREZ',
+            'MZ-08 INT-07': 'LEONOR GALVIS',
+            'MZ-08 INT-08': 'MARTHA CECILIA MAYORGA',
+            'MZ-08 INT-09': 'ROBERTO ARMANDO GELVEZ',
+            'MZ-08 INT-10': 'VICTOR ALVAREZ',
+            'MZ-09 INT-01': 'WILMER RAMIREZ',
+            'MZ-09 INT-02': 'ESMERALDA ALVARADO',
+            'MZ-09 INT-03': 'ISMAEL ENRIQUE TORRADO',
+            'MZ-09 INT-04': 'CIRO BALMACEDA CASTILLA',
+            'MZ-11 INT-01': 'EDELFINA GIL',
+            'MZ-11 INT-02': 'GUSTAVO CASTILLA',
+            'MZ-11 INT-03': 'CARLOS QUINTERO',
+            'MZ-11 INT-03-1': 'JORGE JIMENEZ',
+            'MZ-11 INT-03-201': 'JORGE JIMENEZ',
+            'MZ-11 INT-04': 'MARIA DE LOS ANGELES ORTIZ',
+            'MZ-11 INT-05': 'JULIO HERNANDEZ',
+            'MZ-11 INT-06': 'LUDY COTE',
+            'MZ-11 INT-07': 'RUBEN ALBA',
+            'MZ-11 INT-08': 'CLARA BUITRAGO',
+            'MZ-11 INT-09': 'ANA CONTRERAS / ROBIN KELIN',
+            'MZ-11 INT-10': 'ANGEL BUITRAGO',
+            'MZ-11 INT-11': 'JOSE VALOIS',
+            'MZ-11 INT-12': 'MIRIAM HERNANDEZ',
+            'MZ-11 INT-13': 'MARIA ALEJANDRA MONCADA',
+            'MZ-12 INT-01': 'AZUCENA JAIMES',
+            'MZ-12 INT-02': 'CANDY ALEXANDRA ACEVEDO HERRERA',
+            'MZ-12 INT-03': 'MARITZA DUARTE',
+            'MZ-12 INT-04': 'DIANA AMAYA',
+            'MZ-12 INT-05': 'ESTELA CARDENAS',
+            'MZ-12 INT-06': 'LUCY CASTELLANOS',
+            'MZ-12 INT-07': 'MANUEL GONZALES',
+            'MZ-12 INT-08': 'BELCY PEÑALOZA',
+            'MZ-12 INT-09': 'FANNY RANGEL',
+            'MZ-12 INT-10': 'ALIRIO BELTRAN',
+            'MZ-12 INT-11': 'WILSON DURAN',
+            'MZ-12 INT-12': 'CONSUELO BECERRA',
+            'MZ-12 INT-13': 'ALIRIO PEREZ',
+            'MZ-12 INT-14': 'RUTH MARGARITA SANCHEZ',
+            'MZ-12 INT-15': 'MARIELA MENESES',
+            'MZ-12 INT-16': 'YANETH MANRIQUE',
+            'MZ-13 INT-01': 'DORIS MALAVER',
+            'MZ-13 INT-02': 'ROXANA LOZANO',
+            'MZ-13 INT-03': 'MARIA ISABEL RODRIGUEZ',
+            'MZ-13 INT-04': 'JAVIER GARZON',
+            'MZ-13 INT-05': 'MARIA DE LA CRUZ TORRES GARCIA',
+            'MZ-13 INT-06': 'LEIDY PEÑALOZA',
+            'MZ-13 INT-07': 'CARMEN CECILIA SANCHEZ',
+            'MZ-13 INT-08': 'IDULFO TARAZONA',
+            'MZ-13 INT-09': 'YESID HERNANDEZ',
+            'MZ-14 INT-01': 'CARLOS MENDOZA',
+            'MZ-14 INT-02': 'ROBERTO GALVIS',
+            'MZ-14 INT-03': 'GLADIS SOLIS',
+            'MZ-14 INT-04': 'MANUEL PINEDA',
+            'MZ-14 INT-05': 'ORLANDO FUYA',
+            'MZ-14 INT-06': 'SONIA LEON',
+            'MZ-14 INT-07': 'NUVIA ESTELLA GOMEZ SANDOVAL',
+            'MZ-14 INT-08': 'FABIO VELANDIA',
+            'MZ-14 INT-09': 'JOEL CORTEZ',
+            'MZ-14 INT-10': 'RUTH PEREZ',
+            'MZ-14 INT-11': 'EMILSE SANCHEZ',
+            'MZ-14 INT-12': 'MANUEL PINEDA',
+            'MZ-14 INT-13': 'DIOCELINA AYALA',
+            'MZ-14 INT-14': 'YANETH TORRADO',
+            'MZ-14 INT-15': 'ALFREDO AMAYA',
+            'MZ-14 INT-16': 'MANUEL PINEDA',
+            'MZ-15 INT-01': 'MARILCE PEREZ',
+            'MZ-15 INT-02': 'OSCAR CONTRERAS',
+            'MZ-15 INT-03': 'MARIBEL CABALLERO',
+            'MZ-15 INT-04': 'JESUS RIVERA',
+            'MZ-15 INT-05': 'ISABEL SANCHEZ SANCHEZ',
+            'MZ-15 INT-06': 'SONIA LEON MARTINEZ',
+            'MZ-15 INT-07': 'ESPERANZA LEAL',
+            'MZ-15 INT-08': 'ANA MARTINEZ',
+            'MZ-15 INT-09': 'WILLIAM SUESCUM',
+            'MZ-15 INT-10': 'ANA ROSA RIVERA PABON',
+            'MZ-16 INT-01': 'MARILCE PEREZ',
+            'MZ-16 INT-02': 'CONSUELO MARTINEZ/ARMANDO GUZMAN',
+            'MZ-16 INT-03': 'EDITH ESPITIA',
+            'MZ-16 INT-04': 'ELIANA GOMEZ',
+            'MZ-16 INT-05': 'LUIS HERNANDEZ',
+            'MZ-16 INT-06': 'OCTAVIO POLENTINO',
+            'MZ-16 INT-07': 'GREGORIO CONTRERAS',
+            'MZ-16 INT-08': 'FRANCELINA RAMIREZ',
+            'MZ-16 INT-09': 'PEDRO MORA',
+            'MZ-16 INT-10': 'ISMAEL CALIXTO',
+            'MZ-16 INT-11': 'JORGE VILLAMIL VILLAMIZAR',
+            'MZ-16 INT-12': 'OSCAR CONTRERAS',
+            'MZ-16 INT-13': 'JAVIER CONTRERAS',
+            'MZ-16 INT-14': 'FRANCY LOREIDEY SANCHEZ',
+            'MZ-16 INT-15': 'NORALBA PEREZ',
+            'MZ-16 INT-16': 'ZENAIDA TORRES',
+            'MZ-17 INT-01': 'ELBA CASTRO',
+            'MZ-17 INT-02': 'NOHEMI MONCADA',
+            'MZ-17 INT-03': 'CARMEN PEREZ',
+            'MZ-17 INT-04': 'CIRO DIAZ RODRIGUEZ',
+            'MZ-17 INT-05': 'LUCY PAYARES',
+            'MZ-17 INT-06': 'LINA ALBARRACIN',
+            'MZ-17 INT-07': 'MARIA ROSARIO RIZO',
+            'MZ-17 INT-08': 'ADRIANA DURAN',
+            'MZ-17 INT-09': 'EMELINDA TRIGOS',
+            'MZ-17 INT-10': 'ISABEL QUINTERO',
+            'MZ-18 INT-01': 'CLAUDIA QUIROZ',
+            'MZ-18 INT-02': 'JUAN PABLO AMAYA',
+            'MZ-18 INT-03': 'AURA MARIA SANTIAGO',
+            'MZ-18 INT-04': 'MAYRA SERRANO',
+            'MZ-18 INT-05': 'GREICY VILLAN',
+            'MZ-18 INT-06': 'ANIBAL VERA',
+            'MZ-18 INT-07': 'JUAN CARLOS CAMACHO',
+            'MZ-18 INT-08': 'ANA DOLORES REYES',
+            'MZ-18 INT-09': 'LINA ALBARRACIN',
+            'MZ-18 INT-10': 'MARTHA CANO',
+            'MZ-18 INT-11': 'WILLIAM TORRES',
+            'MZ-18 INT-12': 'ALVARO DELGADO',
+            'MZ-18 INT-13': 'ALVARO DELGADO',
+            'MZ-18 INT-14': 'JUAN LEON',
+            'MZ-18 INT-15': 'HERNAN ALFONSO ARIZA',
+            'MZ-18 INT-16': 'GLADIS BELEN IBARRA',
+            'MZ-19 INT-01': 'MARIA EUGENIA RODRIGUEZ',
+            'MZ-19 INT-02': 'ESPERANZA VILLAMIZAR',
+            'MZ-19 INT-03': 'CARMEN ELVIRA GONZALEZ',
+            'MZ-19 INT-04': 'ELIODORO RODRIGUEZ PABON',
+            'MZ-19 INT-05': 'MICHEL TRUJILLO',
+            'MZ-19 INT-06': 'KATHERINE TORRES',
+            'MZ-19 INT-07': 'GLADIS CHONA',
+            'MZ-19 INT-08': 'LUIS RAMON PALENCIA',
+            'MZ-19 INT-09': 'JAIRO LOBO',
+            'MZ-19 INT-10': 'ANA ELBA DIAZ',
+            'MZ-19 INT-11': 'YANET SUESCUM',
+            'MZ-19 INT-12': 'DAGOBERTO AMAYA',
+            'MZ-19 INT-13': 'ROSA DURAN',
+            'MZ-19 INT-14': 'DORIS GONZALES',
+            'MZ-19 INT-15': 'ANA OLIVA RAMOS',
+            'MZ-19 INT-16': 'CONSUELO BECERRA',
+            'MZ-20 INT-01': 'JAIRO AGRINZONES',
+            'MZ-20 INT-02': 'BEATRIZ CASTELLANOS',
+            'MZ-20 INT-03': 'ALFREDO OMAÑA',
+            'MZ-20 INT-04': 'CRISTIAN VERA',
+            'MZ-20 INT-05': 'WILSON BOLIVAR',
+            'MZ-20 INT-06': 'YOLIMAR MONCADA',
+            'MZ-20 INT-07': 'MARCELINA RIDRIGUEZ',
+            'MZ-21 INT-01': 'EUCARIS CAMPO',
+            'MZ-21 INT-02': 'ELIZABETH ANTELIZ',
+            'MZ-21 INT-03': 'ALBERTO DUQUE',
+            'MZ-21 INT-04': 'NEHEMIAS GUTIERREZ',
+            'MZ-21 INT-05': 'HUGO BRICEÑO',
+            'MZ-21 INT-06': 'CARMEN ROSA PARADA C',
+            'MZ-21 INT-07': 'DIANA CALIXTO',
+            'MZ-21 INT-08': 'JULIE DISNEY PORTILLO',
+            'MZ-21 INT-09': 'ALIX CASTELLANOS',
+            'MZ-21 INT-10': 'HUGO LEON',
+            'MZ-21 INT-11': 'ANA OLIVA RAMOS',
+            'MZ-21 INT-12': 'ARACELI MERCHAN',
+            'MZ-21 INT-13': 'ALBA SILVA',
+            'MZ-22 INT-01': 'MARINA OJEDA',
+            'MZ-22 INT-02': 'MARIA VALVINA VERA',
+            'MZ-22 INT-03': 'CARLOS JULIO ALVARES',
+            'MZ-22 INT-04': 'ANDRES LOPEZ',
+            'MZ-22 INT-05': 'EDUARDO ROLON',
+            'MZ-22 INT-06': 'GRACIELA DUQUE',
+            'MZ-22 INT-07': 'CRISTIAN GRANADOS',
+            'MZ-22 INT-08': 'ESPERANZA CORDERO',
+            'MZ-22 INT-09': 'VANESSA SANTIAGO / RONNY AVENDAÑO',
+            'MZ-22 INT-10': 'JORGE SANTIAGO',
+            'MZ-22 INT-11': 'MARTHA SANCHEZ',
+            'MZ-22 INT-12': 'NUBIA MARIA SANDOVAL',
+            'MZ-23 INT-01': 'ALFONSO ZAMBRANO',
+            'MZ-23 INT-02': 'CARLOS FLOREZ',
+            'MZ-23 INT-03': 'CARMEN ROSA CALIXTO',
+            'MZ-23 INT-03-201': 'CARMEN ROSA CALIXTO',
+            'MZ-23 INT-03-301': 'ING CELIS',
+            'MZ-23 INT-04': 'JOSE VARGAS',
+            'MZ-23 INT-05': 'JOSE ALIRIO PEDRAZA',
+            'MZ-23 INT-06': 'ELIECER JACOME',
+            'MZ-23 INT-07': 'ORLANDO DELGADO',
+            'MZ-23 INT-08': 'NORAIMA GOMEZ',
+            'MZ-23 INT-09': 'LEIDY KARINA VANEGAS',
+            'MZ-23 INT-10': 'SANDRA DUARTE',
+            'MZ-23 INT-11': 'NUBIA CASTELLANOS',
+            'MZ-23 INT-12': 'MARLENE CONTRERAS',
+            'MZ-24 INT-01': 'YULLI BOLIVAR',
+            'MZ-24 INT-02': 'HUMBERTO MEZA',
+            'MZ-24 INT-03': 'ADRIANA ZAMBRANO',
+            'MZ-24 INT-04': 'OMAIRA CASTELLANOS',
+            'MZ-24 INT-05': 'LUIS CORREA',
+            'MZ-24 INT-06': 'JORGE ENRIQUE MENDOZA',
+            'MZ-24 INT-07': 'ANA CECILIA SOLANO',
+            'MZ-24 INT-08': 'CARMEN EMILIA VELASCO',
+            'MZ-24 INT-09': 'WILLIAN SARMIENTO',
+            'MZ-24 INT-10': 'LORENA PEREZ',
+            'MZ-24 INT-11': 'GLADIS MOLINA',
+            'MZ-24 INT-12': 'NUBIA CASTELLANOS',
+            'MZ-24 INT-13': 'VICTOR CASTELLANOS',
+            'MZ-25 INT-01': 'ANA CONTRERAS',
+            'MZ-25 INT-02': 'TERESA SARMIENTO',
+            'MZ-25 INT-03': 'LIGIA CONTRERAS',
+            'MZ-25 INT-04': 'PATRICIA CACIQUE',
+            'MZ-25 INT-05': 'JOSE DE LA CRUZ DIAZ',
+            'MZ-25 INT-06': 'GLIDO GUIZA',
+            'MZ-26 INT-01': 'MARIA ALEJANDRA SILVA',
+            'MZ-26 INT-02': 'MARIAM SANTIAGO',
+            'MZ-26 INT-03': 'CRISTOBAL MONCADA',
+            'MZ-26 INT-04': 'MARIA FERNANDA GONZALEZ',
+            'MZ-26 INT-05': 'LUZ ELENA DIAZ',
+            'MZ-26 INT-06': 'NANCY RODRIGUEZ',
+            'MZ-26 INT-07': 'INGRI GRISALES',
+            'MZ-26 INT-08': 'EVA VASQUEZ',
+            'MZ-26 INT-09': 'ASTRID ORTEGA',
+            'MZ-26 INT-10': 'GERMAN CELIS',
+            'MZ-26 INT-11': 'ROSA ELENA ROSO',
+            'MZ-26 INT-12': 'ISMAEL CALIXTO',
+            'MZ-27 INT-01': 'OSCAR ALBERTO PEÑARANDA',
+            'MZ-27 INT-02': 'LEONOR PEREZ',
+            'MZ-27 INT-03': 'SANDRA VELASQUEZ',
+            'MZ-27 INT-04': 'LORENA TORRES RAMIRES',
+            'MZ-27 INT-05': 'PEDRO SANCHEZ GONZALES',
+            'MZ-27 INT-06': 'ROSALBA PARADA',
+            'MZ-27 INT-07': 'MARY LUZ LARROTA',
+            'MZ-27 INT-08': 'CARLOS CASTILLO',
+            'MZ-27 INT-09': 'EFIGENIA BENAVIDES',
+            'MZ-28 INT-01': 'MILLER FERNANDO RINCON',
+            'MZ-28 INT-02': 'MARIA CRISTINA FLOREZ',
+            'MZ-28 INT-03': 'CASILDA CELIS',
+            'MZ-28 INT-04': 'OSCAR MORANTES',
+            'MZ-28 INT-05': 'OFELIA / ROBERTO GALVIS ACTUALIZAR',
+            'MZ-28 INT-06': 'CARMEN PEREZ',
+            'MZ-28 INT-07': 'GERALDIN RODRIGUEZ',
+            'MZ-28 INT-08': 'TERESA FLORES',
+            'MZ-28 INT-09': 'VICTOR MENDOZA',
+            'MZ-28 INT-10': 'LUZ MARINA HERRERA',
+            'MZ-28 INT-11': 'EMERITA PUENTES',
+            'MZ-28 INT-12': 'ANA CECILIA SOLANO',
+            'MZ-28 INT-13': 'ALFONSO BECERRA',
+            'MZ-29 INT-01': 'OMAR AVELLANEDA',
+            'MZ-29 INT-02': 'MARIA ANTONIA WALTEROS',
+            'MZ-29 INT-03': 'JOSE VICENTE CORTEZ / AURELIA ORTIZ',
+            'MZ-29 INT-04': 'GUSTAVO SOLANO',
+            'MZ-29 INT-05': 'JOSE ROJAS MARTINEZ',
+            'MZ-29 INT-06': 'MARLENY VELASQUEZ',
+            'MZ-29 INT-07': 'CRISTINA PEREZ',
+            'MZ-29 INT-08': 'MARTA STELLA DELGADO',
+            'MZ-29 INT-09': 'GRICELDA BECERRA',
+            'MZ-29 INT-10': 'SIMON BOLIVAR',
+            'MZ-29 INT-11': 'NELSON ADOLFO NUNCIRA CARDENAS',
+            'MZ-29 INT-12': 'FABIOLA ARENAS',
+            'MZ-29 INT-13': 'NUBIA COMBARIZA',
+            'MZ-30 INT-01': 'ELIODORO RODRIGUEZ PABON',
+            'MZ-30 INT-02': 'JESUS MORA',
+            'MZ-30 INT-03': 'EDUARDO MEDINA',
+            'MZ-30 INT-04': 'LEONOR MEDINA',
+            'MZ-30 INT-05': 'JOCKSAN AGUIAR',
+            'MZ-30 INT-06': 'MARIA OLIVA MORGADO / EDGAR DANIEL ROLON CARRILLO',
+            'MZ-30 INT-07': 'GUSTAVO TRUJILLO',
+            'MZ-30 INT-08': 'ZENAIDA LAGOS',
+            'MZ-30 INT-09': 'JAVIER SANDOVAL',
+            'MZ-30 INT-10': 'LUZ ESTELA NIÑO',
+            'MZ-30 INT-11': 'NOHORA RINCON',
+            'MZ-30 INT-12': 'MARLENY RINCON RAMIREZ',
+            'MZ-30 INT-13': 'WILMAR JESUS PARADA GOMEZ',
+            'MZ-31 INT-01': 'LILIANA JARAMILLO',
+            'MZ-31 INT-02': 'NUBIA LOZANO',
+            'MZ-31 INT-03': 'RICHARD CASADIEGOS',
+            'MZ-31 INT-04': 'NIDIA AMAYA',
+            'MZ-31 INT-05': 'DIEGO CAICEDO',
+            'MZ-31 INT-06': 'ANA MARIA CONTRERAS GALVIS',
+            'MZ-31 INT-07': 'SONIA GARCIA',
+            'MZ-31 INT-08': 'IRENE PALACIO'
+        };
 
         // Variables globales
         let enviando = false;
@@ -928,56 +941,62 @@
         let consecutivoActual = 'R-2026-0015';
         
         // ============================================
-        // CARGA INICIAL - LLENAR SELECTOR DE PROPIETARIOS
+        // CARGA INICIAL
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Página cargada');
             document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
             
-            // Cargar consecutivo
             const guardado = localStorage.getItem('consecutivoBrisas');
             if (guardado) {
                 consecutivoActual = guardado;
             }
             document.getElementById('proximoRecibo').textContent = consecutivoActual;
             
-            // Cargar selector de propietarios
             llenarSelectorPropietarios();
-            
             cargarRecibosGuardados();
         });
 
         // ============================================
-        // FUNCIÓN PARA LLENAR EL SELECTOR DE PROPIETARIOS
+        // LLENAR SELECTOR DE PROPIETARIOS
         // ============================================
         function llenarSelectorPropietarios() {
+            console.log('📋 Llenando selector de propietarios...');
             const select = document.getElementById('selectorPropietario');
             
-            // Ordenar las direcciones alfabéticamente
             const direcciones = Object.keys(propietarios).sort();
             
             for (const direccion of direcciones) {
                 const propietario = propietarios[direccion];
                 const option = document.createElement('option');
                 option.value = direccion;
-                // Formato: "NOMBRE - DIRECCIÓN"
                 option.textContent = `${propietario} - ${direccion}`;
                 select.appendChild(option);
             }
+            console.log(`✅ ${direcciones.length} propietarios cargados`);
         }
 
         // ============================================
-        // FUNCIÓN PARA CARGAR DATOS DEL PROPIETARIO SELECCIONADO
+        // CARGAR DATOS DEL PROPIETARIO SELECCIONADO - CORREGIDA
         // ============================================
         function cargarDatosPropietario() {
             const select = document.getElementById('selectorPropietario');
             const direccion = select.value;
             
+            console.log('📍 Dirección seleccionada:', direccion);
+            
             if (direccion) {
                 const propietario = propietarios[direccion];
+                console.log('👤 Propietario encontrado:', propietario);
                 
                 // Actualizar campos ocultos (para el recibo)
                 document.getElementById('propietario').value = propietario;
                 document.getElementById('direccion').value = direccion;
+                
+                console.log('✅ Campos actualizados:', {
+                    propietario: document.getElementById('propietario').value,
+                    direccion: document.getElementById('direccion').value
+                });
                 
                 // Actualizar información visible
                 document.getElementById('infoNombre').textContent = propietario;
@@ -985,10 +1004,13 @@
                 
                 // Mostrar mensaje de éxito
                 document.getElementById('resultadoBusqueda').innerHTML = '✅ ' + propietario;
+                
             } else {
-                // Limpiar si no hay selección
+                console.log('ℹ️ No se seleccionó ninguna dirección');
+                
                 document.getElementById('propietario').value = '';
                 document.getElementById('direccion').value = '';
+                
                 document.getElementById('infoNombre').textContent = '---';
                 document.getElementById('infoDireccion').textContent = '---';
                 document.getElementById('resultadoBusqueda').innerHTML = '';
@@ -1011,7 +1033,32 @@
             return "R-2026-0001";
         }
 
+        // ============================================
+        // GENERAR RECIBO - CORREGIDA
+        // ============================================
         function generarRecibo() {
+            console.log('📝 Generando recibo...');
+            
+            const propietario = document.getElementById('propietario').value;
+            const direccion = document.getElementById('direccion').value;
+            
+            console.log('📋 Datos para recibo:', {
+                propietario: propietario,
+                direccion: direccion,
+                monto: document.getElementById('monto').value,
+                mes: document.getElementById('mesPago').value
+            });
+            
+            if (!propietario || !direccion) {
+                console.error('❌ Faltan datos del propietario');
+                const mensajeDiv = document.getElementById('mensaje');
+                mensajeDiv.className = 'message error';
+                mensajeDiv.innerHTML = '❌ Por favor seleccione un propietario válido';
+                mensajeDiv.style.display = 'block';
+                setTimeout(() => mensajeDiv.style.display = 'none', 3000);
+                return null;
+            }
+            
             const monto = parseFloat(document.getElementById('monto').value) || 0;
             const numeroRecibo = consecutivoActual;
             const mesSeleccionado = document.getElementById('mesPago').value;
@@ -1019,12 +1066,14 @@
             document.getElementById('r_numero').innerText = numeroRecibo;
             document.getElementById('r_fecha').innerText = document.getElementById('fecha').value;
             document.getElementById('r_mes').innerText = mesSeleccionado;
-            document.getElementById('r_propietario').innerText = document.getElementById('propietario').value;
-            document.getElementById('r_direccion').innerText = document.getElementById('direccion').value;
+            document.getElementById('r_propietario').innerText = propietario;
+            document.getElementById('r_direccion').innerText = direccion;
             document.getElementById('r_monto').innerText = '$ ' + monto.toLocaleString('es-CO');
             document.getElementById('r_letras').innerText = numeroALetras(monto);
             document.getElementById('r_metodo').innerText = document.getElementById('metodo').value;
             document.getElementById('r_obs').innerText = document.getElementById('obs').value || 'Ninguna';
+            
+            console.log('✅ Recibo generado con número:', numeroRecibo);
             
             document.getElementById('reciboContainer').style.display = 'block';
             document.getElementById('reciboContainer').scrollIntoView({ behavior: 'smooth' });
@@ -1294,18 +1343,27 @@
             console.log('📊 Recibos guardados en localStorage:', recibos.length);
         }
 
+        // ============================================
+        // PROCESAR PAGO - CORREGIDA
+        // ============================================
         async function procesarPago() {
             if (enviando) return;
             
             const btn = document.getElementById('btnRegistrar');
             const mensajeDiv = document.getElementById('mensaje');
             
-            // Validar que se haya seleccionado un propietario
+            console.log('🔄 Iniciando procesarPago...');
+            
             const propietario = document.getElementById('propietario').value;
-            if (!propietario) {
+            const direccion = document.getElementById('direccion').value;
+            
+            console.log('📋 Validando datos:', { propietario, direccion });
+            
+            if (!propietario || !direccion) {
                 mensajeDiv.className = 'message error';
-                mensajeDiv.innerHTML = '❌ Por favor seleccione un propietario';
+                mensajeDiv.innerHTML = '❌ Por favor seleccione un propietario del menú desplegable';
                 mensajeDiv.style.display = 'block';
+                setTimeout(() => mensajeDiv.style.display = 'none', 3000);
                 return;
             }
             
@@ -1325,8 +1383,12 @@
             try {
                 const numeroRecibo = generarRecibo();
                 
+                if (!numeroRecibo) {
+                    throw new Error('No se pudo generar el recibo');
+                }
+                
                 const datosPago = {
-                    direccion: document.getElementById('direccion').value,
+                    direccion: direccion,
                     propietario: propietario,
                     monto: monto,
                     fecha: document.getElementById('fecha').value,
@@ -1334,6 +1396,8 @@
                     metodo: document.getElementById('metodo').value,
                     obs: document.getElementById('obs').value || ''
                 };
+                
+                console.log('📤 Enviando datos:', datosPago);
                 
                 await guardarReciboEnSheet(numeroRecibo, datosPago);
                 guardarReciboLocal(numeroRecibo, datosPago);
@@ -1351,7 +1415,7 @@
                 document.getElementById('monto').value = '';
                 
             } catch (error) {
-                console.error('Error en procesarPago:', error);
+                console.error('❌ Error en procesarPago:', error);
                 mensajeDiv.className = 'message error';
                 mensajeDiv.innerHTML = '❌ Error al procesar el pago: ' + error.message;
                 mensajeDiv.style.display = 'block';
