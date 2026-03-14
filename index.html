@@ -343,43 +343,50 @@
         }
         
         /* ============================================ */
-        /* ESTILOS MEJORADOS PARA LA FIRMA - MÁS GRANDE */
+        /* ESTILOS CORREGIDOS PARA LA FIRMA - ESPACIOS REDUCIDOS */
         /* ============================================ */
         .recibo-firma { 
-            margin-top: 40px; 
+            margin-top: 20px;  /* Reducido de 40px a 20px */
             text-align: center; 
             border-top: 2px dashed #FFD700;
-            padding-top: 25px;
+            padding-top: 15px;  /* Reducido de 25px a 15px */
+        }
+        .recibo-firma .texto-recibi {
+            font-size: 1.1rem;
+            margin-bottom: 5px;  /* Espacio pequeño antes de la firma */
         }
         .recibo-firma .firma-imagen {
-            max-width: 300px;  /* Aumentado de 200px a 300px */
+            max-width: 300px;
             width: 100%;
             height: auto;
-            max-height: 100px; /* Aumentado de 60px a 100px */
+            max-height: 100px;
             object-fit: contain;
-            margin: 15px auto;
+            margin: 0 auto 5px auto;  /* Reducido de 15px a 5px */
             display: block;
             filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
         }
         .recibo-firma .linea-firma {
             border-top: 2px solid #333;
-            width: 300px;      /* Aumentado de 250px a 300px */
-            margin: 15px auto;
+            width: 300px;
+            margin: 5px auto 8px auto;  /* Reducido de 15px a 5px superior y 8px inferior */
         }
         .recibo-firma .nombre-admin {
             font-weight: bold;
-            font-size: 1.2rem;  /* Aumentado de 1rem a 1.2rem */
+            font-size: 1.2rem;
             color: #1e3c5c;
             letter-spacing: 1px;
+            line-height: 1.2;  /* Reducido espacio entre líneas */
+            margin-bottom: 2px;
         }
         .recibo-firma .cargo-admin {
-            font-size: 1rem;     /* Aumentado de 0.9rem a 1rem */
+            font-size: 1rem;
             color: #666;
-            margin-top: 3px;
+            margin-top: 0;  /* Eliminado margen superior */
+            margin-bottom: 5px;
             font-style: italic;
         }
         .recibo-firma .sello {
-            margin-top: 15px;
+            margin-top: 5px;  /* Reducido de 15px a 5px */
             font-size: 0.8rem;
             color: #999;
             text-transform: uppercase;
@@ -419,21 +426,12 @@
             .reset-input-group { flex-direction: column; }
             .btn-reset { width: 100%; }
             
-            /* Ajustes responsivos para la firma */
             .recibo-firma .firma-imagen {
                 max-width: 250px;
                 max-height: 80px;
             }
             .recibo-firma .linea-firma {
                 width: 250px;
-            }
-        }
-
-        /* Para pantallas muy grandes */
-        @media (min-width: 1200px) {
-            .recibo-firma .firma-imagen {
-                max-width: 350px;
-                max-height: 120px;
             }
         }
     </style>
@@ -604,19 +602,19 @@
                         
                         <div class="recibo-letras" id="r_letras"></div>
                         
-                        <!-- FIRMA DEL ADMINISTRADOR - VERSIÓN MÁS GRANDE -->
+                        <!-- FIRMA DEL ADMINISTRADOR - ESPACIOS CORREGIDOS -->
                         <div class="recibo-firma">
-                            <div style="margin-bottom: 5px; font-size: 1.1rem;">Recibí conforme,</div>
+                            <div class="texto-recibi">Recibí conforme,</div>
                             
-                            <!-- Imagen de la firma manuscrita - MÁS GRANDE -->
+                            <!-- Imagen de la firma manuscrita -->
                             <img src="https://i.postimg.cc/ZRGyLYfc/Firma-William-Torres.png" 
                                  alt="Firma del Administrador"
                                  class="firma-imagen">
                             
-                            <!-- Línea decorativa - MÁS GRANDE -->
+                            <!-- Línea decorativa -->
                             <div class="linea-firma"></div>
                             
-                            <!-- Nombre y cargo - MÁS GRANDES -->
+                            <!-- Nombre y cargo -->
                             <div class="nombre-admin">WILLIAM TORRES</div>
                             <div class="cargo-admin">Administrador</div>
                             
