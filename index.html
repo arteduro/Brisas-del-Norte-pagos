@@ -180,7 +180,6 @@
         }
         .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        /* SECCIÓN DE CONTROL SIMPLIFICADA */
         .reset-section {
             margin: 20px 0;
             padding: 20px;
@@ -342,12 +341,33 @@
             margin: 10px 0; 
             font-size: 0.8rem;
         }
-        .recibo-firma { margin-top: 20px; text-align: right; }
-        .linea-firma {
+        .recibo-firma { 
+            margin-top: 30px; 
+            text-align: center; 
+        }
+        .recibo-firma .firma-imagen {
+            max-width: 200px;
+            max-height: 60px;
+            object-fit: contain;
+            margin: 10px auto;
+        }
+        .recibo-firma .linea-firma {
             border-top: 1px solid #333;
-            width: 150px;
-            margin-left: auto;
-            margin-top: 5px;
+            width: 250px;
+            margin: 10px auto;
+        }
+        .recibo-firma .nombre-admin {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .recibo-firma .cargo-admin {
+            font-size: 0.9rem;
+            color: #1e3c5c;
+        }
+        .recibo-firma .sello {
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: #999;
         }
 
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
@@ -382,6 +402,9 @@
             .recibo-logo { flex-direction: column; text-align: center; }
             .reset-input-group { flex-direction: column; }
             .btn-reset { width: 100%; }
+            .recibo-firma .firma-imagen {
+                max-width: 150px;
+            }
         }
     </style>
 </head>
@@ -475,7 +498,7 @@
                         💾 REGISTRAR PAGO
                     </button>
 
-                    <!-- SECCIÓN DE CONTROL SIMPLIFICADA -->
+                    <!-- SECCIÓN DE CONTROL DE CONSECUTIVO -->
                     <div class="reset-section">
                         <div class="reset-title">
                             <i class="fas fa-sliders-h"></i> CONTROL DE CONSECUTIVO
@@ -551,9 +574,24 @@
                         
                         <div class="recibo-letras" id="r_letras"></div>
                         
+                        <!-- FIRMA DEL ADMINISTRADOR CON IMAGEN MANUSCRITA -->
                         <div class="recibo-firma">
-                            <div>Recibí conforme,</div>
+                            <div style="margin-bottom: 5px;">Recibí conforme,</div>
+                            
+                            <!-- Imagen de la firma manuscrita -->
+                            <img src="https://i.postimg.cc/ZRGyLYfc/Firma-William-Torres.png" 
+                                 alt="Firma del Administrador"
+                                 class="firma-imagen">
+                            
+                            <!-- Línea decorativa -->
                             <div class="linea-firma"></div>
+                            
+                            <!-- Nombre y cargo -->
+                            <div class="nombre-admin">WILLIAM TORRES</div>
+                            <div class="cargo-admin">Administrador</div>
+                            
+                            <!-- Sello del conjunto -->
+                            <div class="sello">CONDOMINIO BRISAS DEL NORTE</div>
                         </div>
                     </div>
                     
