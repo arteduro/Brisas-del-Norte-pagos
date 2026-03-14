@@ -343,17 +343,17 @@
         }
         
         /* ============================================ */
-        /* ESTILOS FIRMA - CASI SOBRE LA LÍNEA */
+        /* ESTILOS FIRMA - COMPLETAMENTE PEGADA A LA LÍNEA */
         /* ============================================ */
         .recibo-firma { 
-            margin-top: 15px;           /* Espacio mínimo después del total */
+            margin-top: 15px;
             text-align: center; 
             border-top: 2px dashed #FFD700;
-            padding-top: 8px;            /* Muy poco padding superior */
+            padding-top: 5px;
         }
         .recibo-firma .texto-recibi {
             font-size: 1rem;
-            margin-bottom: 2px;          /* Casi pegado a la firma */
+            margin-bottom: 0px;        /* Sin espacio después del texto */
             font-weight: 500;
         }
         .recibo-firma .firma-imagen {
@@ -362,14 +362,16 @@
             height: auto;
             max-height: 90px;
             object-fit: contain;
-            margin: 0 auto 0 auto;       /* Sin margen inferior */
+            margin: 0 auto 0 auto;      /* Sin margen inferior */
             display: block;
             filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1));
+            line-height: 0;              /* Eliminar espacio de línea */
+            vertical-align: bottom;      /* Alinear al fondo */
         }
         .recibo-firma .linea-firma {
             border-top: 2px solid #333;
             width: 300px;
-            margin: 0 auto 5px auto;     /* La línea casi pegada a la firma */
+            margin: 0 auto 5px auto;     /* La línea PEGADA a la firma (margin-top:0) */
         }
         .recibo-firma .nombre-admin {
             font-weight: bold;
@@ -604,7 +606,7 @@
                         
                         <div class="recibo-letras" id="r_letras"></div>
                         
-                        <!-- FIRMA DEL ADMINISTRADOR - CASI SOBRE LA LÍNEA -->
+                        <!-- FIRMA DEL ADMINISTRADOR - PEGADA A LA LÍNEA -->
                         <div class="recibo-firma">
                             <div class="texto-recibi">Recibí conforme,</div>
                             
@@ -613,7 +615,7 @@
                                  alt="Firma del Administrador"
                                  class="firma-imagen">
                             
-                            <!-- Línea decorativa - CASI PEGADA A LA FIRMA -->
+                            <!-- Línea decorativa - COMPLETAMENTE PEGADA A LA FIRMA -->
                             <div class="linea-firma"></div>
                             
                             <!-- Nombre y cargo -->
