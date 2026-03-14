@@ -343,54 +343,56 @@
         }
         
         /* ============================================ */
-        /* ESTILOS CORREGIDOS PARA LA FIRMA - ESPACIOS REDUCIDOS */
+        /* ESTILOS FIRMA - CASI SOBRE LA LÍNEA */
         /* ============================================ */
         .recibo-firma { 
-            margin-top: 20px;  /* Reducido de 40px a 20px */
+            margin-top: 15px;           /* Espacio mínimo después del total */
             text-align: center; 
             border-top: 2px dashed #FFD700;
-            padding-top: 15px;  /* Reducido de 25px a 15px */
+            padding-top: 8px;            /* Muy poco padding superior */
         }
         .recibo-firma .texto-recibi {
-            font-size: 1.1rem;
-            margin-bottom: 5px;  /* Espacio pequeño antes de la firma */
+            font-size: 1rem;
+            margin-bottom: 2px;          /* Casi pegado a la firma */
+            font-weight: 500;
         }
         .recibo-firma .firma-imagen {
             max-width: 300px;
             width: 100%;
             height: auto;
-            max-height: 100px;
+            max-height: 90px;
             object-fit: contain;
-            margin: 0 auto 5px auto;  /* Reducido de 15px a 5px */
+            margin: 0 auto 0 auto;       /* Sin margen inferior */
             display: block;
-            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1));
         }
         .recibo-firma .linea-firma {
             border-top: 2px solid #333;
             width: 300px;
-            margin: 5px auto 8px auto;  /* Reducido de 15px a 5px superior y 8px inferior */
+            margin: 0 auto 5px auto;     /* La línea casi pegada a la firma */
         }
         .recibo-firma .nombre-admin {
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #1e3c5c;
-            letter-spacing: 1px;
-            line-height: 1.2;  /* Reducido espacio entre líneas */
-            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+            line-height: 1.1;
+            margin-top: 0;
+            margin-bottom: 0;
         }
         .recibo-firma .cargo-admin {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #666;
-            margin-top: 0;  /* Eliminado margen superior */
-            margin-bottom: 5px;
+            margin-top: 0;
+            margin-bottom: 3px;
             font-style: italic;
         }
         .recibo-firma .sello {
-            margin-top: 5px;  /* Reducido de 15px a 5px */
-            font-size: 0.8rem;
+            margin-top: 3px;
+            font-size: 0.7rem;
             color: #999;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
@@ -428,7 +430,7 @@
             
             .recibo-firma .firma-imagen {
                 max-width: 250px;
-                max-height: 80px;
+                max-height: 70px;
             }
             .recibo-firma .linea-firma {
                 width: 250px;
@@ -602,7 +604,7 @@
                         
                         <div class="recibo-letras" id="r_letras"></div>
                         
-                        <!-- FIRMA DEL ADMINISTRADOR - ESPACIOS CORREGIDOS -->
+                        <!-- FIRMA DEL ADMINISTRADOR - CASI SOBRE LA LÍNEA -->
                         <div class="recibo-firma">
                             <div class="texto-recibi">Recibí conforme,</div>
                             
@@ -611,7 +613,7 @@
                                  alt="Firma del Administrador"
                                  class="firma-imagen">
                             
-                            <!-- Línea decorativa -->
+                            <!-- Línea decorativa - CASI PEGADA A LA FIRMA -->
                             <div class="linea-firma"></div>
                             
                             <!-- Nombre y cargo -->
