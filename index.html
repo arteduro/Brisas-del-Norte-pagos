@@ -437,6 +437,50 @@
             .recibo-firma .linea-firma {
                 width: 250px;
             }
+            
+            /* Optimizaciones para el recibo en móvil */
+            #recibo {
+                font-size: 12px !important;
+                padding: 10px !important;
+            }
+            
+            .recibo-logo img {
+                max-width: 80px !important;
+                max-height: 35px !important;
+            }
+            
+            .recibo-logo h2 {
+                font-size: 0.9rem !important;
+            }
+            
+            .recibo-logo p {
+                font-size: 0.65rem !important;
+            }
+            
+            .recibo-linea {
+                font-size: 11px !important;
+            }
+            
+            .recibo-total {
+                font-size: 1rem !important;
+            }
+            
+            .recibo-letras {
+                font-size: 0.7rem !important;
+            }
+            
+            .recibo-firma .firma-imagen {
+                max-width: 200px !important;
+                max-height: 60px !important;
+            }
+            
+            .recibo-firma .nombre-admin {
+                font-size: 0.9rem !important;
+            }
+            
+            .recibo-firma .cargo-admin {
+                font-size: 0.8rem !important;
+            }
         }
     </style>
 </head>
@@ -1138,31 +1182,52 @@
             return numeroRecibo;
         }
 
+        // ============================================
+        // FUNCIÓN MEJORADA PARA GENERAR PDF - CON ALTURA DINÁMICA
+        // ============================================
         async function generarPDF() {
             const btn = event.target;
             btn.disabled = true;
             btn.innerHTML = '⏳ GENERANDO...';
             
             try {
-                const canvas = await html2canvas(document.getElementById('recibo'), { 
+                // Preparar el recibo para captura
+                const elementoRecibo = document.getElementById('recibo');
+                elementoRecibo.style.width = '350px';
+                elementoRecibo.style.maxWidth = '100%';
+                elementoRecibo.style.margin = '0 auto';
+                elementoRecibo.style.padding = '15px';
+                elementoRecibo.style.fontSize = '14px';
+                
+                // Capturar con alta calidad
+                const canvas = await html2canvas(elementoRecibo, { 
                     scale: 2,
                     backgroundColor: '#ffffff',
                     logging: false,
                     allowTaint: false,
-                    useCORS: true
+                    useCORS: true,
+                    windowWidth: 400
                 });
                 
                 const imgData = canvas.toDataURL('image/png');
+                
+                // Calcular altura dinámica (¡LA CLAVE!)
+                const anchoDeseado = 80; // mm
+                const alturaCalculada = (canvas.height * anchoDeseado) / canvas.width;
+                
+                // Crear PDF con la altura exacta que necesita
                 const pdf = new jspdf.jsPDF({
                     orientation: 'portrait',
                     unit: 'mm',
-                    format: [80, 150]
+                    format: [anchoDeseado, alturaCalculada]
                 });
                 
-                const imgWidth = 70;
+                // Agregar imagen ocupando todo el espacio
+                const imgWidth = anchoDeseado - 10; // márgenes
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 5, 10, imgWidth, imgHeight);
+                pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
                 
+                // Nombre del archivo
                 const direccion = document.getElementById('direccion').value || 'SIN_DIRECCION';
                 const propietario = document.getElementById('propietario').value || 'DESCONOCIDO';
                 const mes = document.getElementById('mesPago').value || 'MES';
