@@ -353,7 +353,7 @@
         }
         .recibo-firma .texto-recibi {
             font-size: 1rem;
-            margin-bottom: 0px;        /* Sin espacio después del texto */
+            margin-bottom: 0px;
             font-weight: 500;
         }
         .recibo-firma .firma-imagen {
@@ -362,16 +362,16 @@
             height: auto;
             max-height: 90px;
             object-fit: contain;
-            margin: 0 auto 0 auto;      /* Sin margen inferior */
+            margin: 0 auto 0 auto;
             display: block;
             filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.1));
-            line-height: 0;              /* Eliminar espacio de línea */
-            vertical-align: bottom;      /* Alinear al fondo */
+            line-height: 0;
+            vertical-align: bottom;
         }
         .recibo-firma .linea-firma {
             border-top: 2px solid #333;
             width: 300px;
-            margin: 0 auto 5px auto;     /* La línea PEGADA a la firma (margin-top:0) */
+            margin: 0 auto 5px auto;
         }
         .recibo-firma .nombre-admin {
             font-weight: bold;
@@ -436,50 +436,6 @@
             }
             .recibo-firma .linea-firma {
                 width: 250px;
-            }
-            
-            /* Optimizaciones para el recibo en móvil */
-            #recibo {
-                font-size: 12px !important;
-                padding: 10px !important;
-            }
-            
-            .recibo-logo img {
-                max-width: 80px !important;
-                max-height: 35px !important;
-            }
-            
-            .recibo-logo h2 {
-                font-size: 0.9rem !important;
-            }
-            
-            .recibo-logo p {
-                font-size: 0.65rem !important;
-            }
-            
-            .recibo-linea {
-                font-size: 11px !important;
-            }
-            
-            .recibo-total {
-                font-size: 1rem !important;
-            }
-            
-            .recibo-letras {
-                font-size: 0.7rem !important;
-            }
-            
-            .recibo-firma .firma-imagen {
-                max-width: 200px !important;
-                max-height: 60px !important;
-            }
-            
-            .recibo-firma .nombre-admin {
-                font-size: 0.9rem !important;
-            }
-            
-            .recibo-firma .cargo-admin {
-                font-size: 0.8rem !important;
             }
         }
     </style>
@@ -1052,6 +1008,9 @@
         let reseteando = false;
         let consecutivoActual = 'R-2026-0015';
         
+        // Array para almacenar recibos generados (para impresión múltiple)
+        let recibosGenerados = [];
+        
         // ============================================
         // CARGA INICIAL
         // ============================================
@@ -1179,11 +1138,22 @@
             document.getElementById('reciboContainer').style.display = 'block';
             document.getElementById('reciboContainer').scrollIntoView({ behavior: 'smooth' });
             
-            return numeroRecibo;
+            return {
+                numero: numeroRecibo,
+                fecha: document.getElementById('fecha').value,
+                mes: mesSeleccionado,
+                propietario: propietario,
+                direccion: direccion,
+                monto: monto,
+                montoFormateado: '$ ' + monto.toLocaleString('es-CO'),
+                letras: numeroALetras(monto),
+                metodo: document.getElementById('metodo').value,
+                obs: document.getElementById('obs').value || 'Ninguna'
+            };
         }
 
         // ============================================
-        // FUNCIÓN MEJORADA PARA GENERAR PDF - CON ALTURA DINÁMICA
+        // FUNCIÓN PARA GENERAR PDF CON 2 RECIBOS POR HOJA
         // ============================================
         async function generarPDF() {
             const btn = event.target;
@@ -1191,69 +1161,277 @@
             btn.innerHTML = '⏳ GENERANDO...';
             
             try {
-                // Preparar el recibo para captura
-                const elementoRecibo = document.getElementById('recibo');
-                elementoRecibo.style.width = '350px';
-                elementoRecibo.style.maxWidth = '100%';
-                elementoRecibo.style.margin = '0 auto';
-                elementoRecibo.style.padding = '15px';
-                elementoRecibo.style.fontSize = '14px';
+                // Obtener el recibo actual
+                const reciboActual = {
+                    numero: document.getElementById('r_numero').innerText,
+                    fecha: document.getElementById('r_fecha').innerText,
+                    mes: document.getElementById('r_mes').innerText,
+                    propietario: document.getElementById('r_propietario').innerText,
+                    direccion: document.getElementById('r_direccion').innerText,
+                    monto: document.getElementById('r_monto').innerText,
+                    letras: document.getElementById('r_letras').innerText,
+                    metodo: document.getElementById('r_metodo').innerText,
+                    obs: document.getElementById('r_obs').innerText
+                };
                 
-                // Capturar con alta calidad
-                const canvas = await html2canvas(elementoRecibo, { 
+                // Agregar a la lista de recibos generados
+                recibosGenerados.push(reciboActual);
+                
+                // Verificar si tenemos al menos 2 recibos o forzar generación individual
+                if (recibosGenerados.length >= 2) {
+                    // Generar PDF con 2 recibos
+                    await generarPDFConDosRecibos(recibosGenerados[0], recibosGenerados[1]);
+                    // Limpiar la lista después de generar
+                    recibosGenerados = [];
+                } else {
+                    // Informar al usuario que el próximo recibo completará la hoja
+                    const mensajeDiv = document.getElementById('mensaje');
+                    mensajeDiv.className = 'message info';
+                    mensajeDiv.innerHTML = `✅ Recibo ${reciboActual.numero} generado. El próximo recibo completará la hoja.`;
+                    mensajeDiv.style.display = 'block';
+                    setTimeout(() => mensajeDiv.style.display = 'none', 3000);
+                    
+                    // Habilitar botón nuevamente
+                    btn.disabled = false;
+                    btn.innerHTML = '📥 DESCARGAR PDF';
+                    return;
+                }
+                
+            } catch (e) {
+                alert('Error al generar PDF: ' + e.message);
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '📥 DESCARGAR PDF';
+        }
+
+        // ============================================
+        // FUNCIÓN PARA GENERAR PDF CON DOS RECIBOS
+        // ============================================
+        async function generarPDFConDosRecibos(recibo1, recibo2) {
+            try {
+                // Crear contenedor temporal para los dos recibos
+                const contenedor = document.createElement('div');
+                contenedor.style.width = '216mm';
+                contenedor.style.height = '279mm';
+                contenedor.style.backgroundColor = 'white';
+                contenedor.style.padding = '5mm';
+                contenedor.style.boxSizing = 'border-box';
+                contenedor.style.fontFamily = 'Arial, sans-serif';
+                contenedor.style.position = 'relative';
+
+                // Primer recibo (superior)
+                const reciboDiv1 = document.createElement('div');
+                reciboDiv1.style.height = '50%';
+                reciboDiv1.style.borderBottom = '2px dashed #aaa';
+                reciboDiv1.style.paddingBottom = '5mm';
+                reciboDiv1.style.marginBottom = '5mm';
+                reciboDiv1.innerHTML = generarHTMLRecibo(recibo1);
+                contenedor.appendChild(reciboDiv1);
+
+                // Segundo recibo (inferior)
+                const reciboDiv2 = document.createElement('div');
+                reciboDiv2.style.height = '50%';
+                reciboDiv2.innerHTML = generarHTMLRecibo(recibo2);
+                contenedor.appendChild(reciboDiv2);
+
+                document.body.appendChild(contenedor);
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                const canvas = await html2canvas(contenedor, {
                     scale: 2,
                     backgroundColor: '#ffffff',
                     logging: false,
                     allowTaint: false,
-                    useCORS: true,
-                    windowWidth: 400
+                    useCORS: true
                 });
-                
+
                 const imgData = canvas.toDataURL('image/png');
-                
-                // Calcular altura dinámica (¡LA CLAVE!)
-                const anchoDeseado = 80; // mm
-                const alturaCalculada = (canvas.height * anchoDeseado) / canvas.width;
-                
-                // Crear PDF con la altura exacta que necesita
+
                 const pdf = new jspdf.jsPDF({
                     orientation: 'portrait',
                     unit: 'mm',
-                    format: [anchoDeseado, alturaCalculada]
+                    format: [216, 279]
                 });
-                
-                // Agregar imagen ocupando todo el espacio
-                const imgWidth = anchoDeseado - 10; // márgenes
+
+                const pageWidth = 216;
+                const margin = 5;
+                const imgWidth = pageWidth - (margin * 2);
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
+
+                pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
                 
                 // Nombre del archivo
-                const direccion = document.getElementById('direccion').value || 'SIN_DIRECCION';
-                const propietario = document.getElementById('propietario').value || 'DESCONOCIDO';
-                const mes = document.getElementById('mesPago').value || 'MES';
+                const nombre1 = limpiarNombre(recibo1.propietario);
+                const dir1 = limpiarNombre(recibo1.direccion);
+                const nombre2 = limpiarNombre(recibo2.propietario);
+                const dir2 = limpiarNombre(recibo2.direccion);
                 
-                const direccionLimpia = direccion
-                    .trim()
-                    .replace(/\s+/g, ' ')
-                    .replace(/[^\w\s-]/g, '')
-                    .replace(/\s+/g, '_');
-                
-                const propietarioLimpio = propietario
-                    .trim()
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')
-                    .replace(/[^\w\s-]/g, '')
-                    .replace(/\s+/g, '_');
-                
-                const nombreArchivo = `${direccionLimpia}_${propietarioLimpio}_${mes}.pdf`;
+                const nombreArchivo = `Recibos_${recibo1.numero}_${nombre1}_${dir1}_y_${recibo2.numero}_${nombre2}_${dir2}.pdf`;
                 
                 pdf.save(nombreArchivo);
                 
-                console.log('✅ PDF guardado como:', nombreArchivo);
+                document.body.removeChild(contenedor);
                 
                 const mensajeDiv = document.getElementById('mensaje');
                 mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = `✅ PDF generado: ${nombreArchivo}`;
+                mensajeDiv.innerHTML = `✅ PDF generado con 2 recibos: ${recibo1.numero} y ${recibo2.numero}`;
+                mensajeDiv.style.display = 'block';
+                setTimeout(() => mensajeDiv.style.display = 'none', 3000);
+                
+            } catch (error) {
+                console.error('Error generando PDF con dos recibos:', error);
+                throw error;
+            }
+        }
+
+        // ============================================
+        // FUNCIÓN AUXILIAR: Generar HTML de un recibo
+        // ============================================
+        function generarHTMLRecibo(recibo) {
+            return `
+                <div style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; padding: 3mm; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                            <img src="https://i.postimg.cc/2yb3MyY0/LOGO-BRISAS-DEL-NORTE.png" style="max-width: 80px; max-height: 35px; object-fit: contain;">
+                            <div>
+                                <h2 style="margin:0; font-size:0.9rem; line-height:1.2;">CONJUNTO RESIDENCIAL CERRADO BRISAS DEL NORTE</h2>
+                                <p style="margin:0; font-size:0.65rem;">NIT: 807.003.209-3 - Personería Jurídica No.1646 - Dic 17/1993</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; background: #f0f7ff; padding: 5px; border-radius: 5px; margin-bottom: 5px;">
+                            <div><strong>No. Recibo:</strong> ${recibo.numero}</div>
+                            <div><strong>Fecha:</strong> ${recibo.fecha}</div>
+                            <div><strong>Mes:</strong> ${recibo.mes}</div>
+                            <div><strong>Recibimos de:</strong> ${recibo.propietario}</div>
+                            <div><strong>Dirección:</strong> ${recibo.direccion}</div>
+                            <div><strong>Método:</strong> ${recibo.metodo}</div>
+                        </div>
+                        
+                        <table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-bottom:5px;">
+                            <tr>
+                                <td style="padding:3px; border-bottom:1px solid #e0e7ef;"><strong>Observaciones:</strong></td>
+                                <td style="padding:3px; border-bottom:1px solid #e0e7ef;">${recibo.obs}</td>
+                            </tr>
+                        </table>
+                        
+                        <div style="background: #fff3cd; padding: 8px; border-radius: 5px; margin: 10px 0; font-size: 1rem; font-weight: bold; display: flex; justify-content: space-between; border-left: 4px solid #ffc107;">
+                            <span>TOTAL PAGADO:</span>
+                            <span>${recibo.monto}</span>
+                        </div>
+                        
+                        <div style="font-style: italic; text-align: center; color: #666; margin: 5px 0; font-size: 0.8rem;">
+                            ${recibo.letras}
+                        </div>
+                        
+                        <!-- FIRMA DEL ADMINISTRADOR -->
+                        <div style="margin-top: 10px; text-align: center; border-top: 2px dashed #FFD700; padding-top: 5px;">
+                            <div style="font-size: 0.9rem; margin-bottom: 0px;">Recibí conforme,</div>
+                            <img src="https://i.postimg.cc/ZRGyLYfc/Firma-William-Torres.png" 
+                                 alt="Firma del Administrador"
+                                 style="max-width: 200px; max-height: 60px; object-fit: contain; margin: 0 auto 0 auto; display: block;">
+                            <div style="border-top: 2px solid #333; width: 200px; margin: 0 auto 3px auto;"></div>
+                            <div style="font-weight: bold; font-size: 0.9rem;">WILLIAM TORRES</div>
+                            <div style="font-size: 0.8rem; color: #666;">Administrador</div>
+                            <div style="margin-top: 3px; font-size: 0.6rem; color: #999;">CONDOMINIO BRISAS DEL NORTE</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // FUNCIÓN AUXILIAR: Limpiar nombre para archivo
+        // ============================================
+        function limpiarNombre(texto) {
+            if (!texto) return 'SIN_NOMBRE';
+            return texto
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-zA-Z0-9\s]/g, ' ')
+                .replace(/\s+/g, '_')
+                .replace(/_+/g, '_')
+                .substring(0, 15);
+        }
+
+        // ============================================
+        // FUNCIÓN PARA GENERAR PDF INDIVIDUAL (RESPALDO)
+        // ============================================
+        async function generarPDFIndividual() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ GENERANDO...';
+            
+            try {
+                // Crear contenedor para un solo recibo (en la mitad superior)
+                const contenedor = document.createElement('div');
+                contenedor.style.width = '216mm';
+                contenedor.style.height = '279mm';
+                contenedor.style.backgroundColor = 'white';
+                contenedor.style.padding = '5mm';
+                contenedor.style.boxSizing = 'border-box';
+                contenedor.style.fontFamily = 'Arial, sans-serif';
+                contenedor.style.position = 'relative';
+
+                // Recibo en la parte superior
+                const reciboDiv = document.createElement('div');
+                reciboDiv.style.height = '50%';
+                reciboDiv.style.paddingBottom = '5mm';
+                
+                const reciboActual = {
+                    numero: document.getElementById('r_numero').innerText,
+                    fecha: document.getElementById('r_fecha').innerText,
+                    mes: document.getElementById('r_mes').innerText,
+                    propietario: document.getElementById('r_propietario').innerText,
+                    direccion: document.getElementById('r_direccion').innerText,
+                    monto: document.getElementById('r_monto').innerText,
+                    letras: document.getElementById('r_letras').innerText,
+                    metodo: document.getElementById('r_metodo').innerText,
+                    obs: document.getElementById('r_obs').innerText
+                };
+                
+                reciboDiv.innerHTML = generarHTMLRecibo(reciboActual);
+                contenedor.appendChild(reciboDiv);
+
+                document.body.appendChild(contenedor);
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                const canvas = await html2canvas(contenedor, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: false,
+                    useCORS: true
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+
+                const pdf = new jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: [216, 279]
+                });
+
+                const pageWidth = 216;
+                const margin = 5;
+                const imgWidth = pageWidth - (margin * 2);
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+                
+                const nombre = limpiarNombre(reciboActual.propietario);
+                const dir = limpiarNombre(reciboActual.direccion);
+                
+                const nombreArchivo = `Recibo_${reciboActual.numero}_${nombre}_${dir}.pdf`;
+                
+                pdf.save(nombreArchivo);
+                
+                document.body.removeChild(contenedor);
+                
+                const mensajeDiv = document.getElementById('mensaje');
+                mensajeDiv.className = 'message success';
+                mensajeDiv.innerHTML = `✅ Recibo ${reciboActual.numero} generado individualmente`;
                 mensajeDiv.style.display = 'block';
                 setTimeout(() => mensajeDiv.style.display = 'none', 3000);
                 
@@ -1471,9 +1649,9 @@
             mensajeDiv.style.display = 'none';
             
             try {
-                const numeroRecibo = generarRecibo();
+                const reciboData = generarRecibo();
                 
-                if (!numeroRecibo) {
+                if (!reciboData) {
                     throw new Error('No se pudo generar el recibo');
                 }
                 
@@ -1489,8 +1667,8 @@
                 
                 console.log('📤 Enviando datos:', datosPago);
                 
-                await guardarReciboEnSheet(numeroRecibo, datosPago);
-                guardarReciboLocal(numeroRecibo, datosPago);
+                await guardarReciboEnSheet(reciboData.numero, datosPago);
+                guardarReciboLocal(reciboData.numero, datosPago);
                 
                 const nuevoConsecutivo = generarSiguienteConsecutivo(consecutivoActual);
                 consecutivoActual = nuevoConsecutivo;
@@ -1498,7 +1676,7 @@
                 document.getElementById('proximoRecibo').textContent = consecutivoActual;
                 
                 mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = `✅ Recibo ${numeroRecibo} generado<br>📌 Propietario: ${propietario}<br>📌 Mes: ${datosPago.mes}<br>📌 Próximo: ${nuevoConsecutivo}`;
+                mensajeDiv.innerHTML = `✅ Recibo ${reciboData.numero} generado<br>📌 Propietario: ${propietario}<br>📌 Mes: ${datosPago.mes}<br>📌 Próximo: ${nuevoConsecutivo}`;
                 mensajeDiv.style.display = 'block';
                 
                 document.getElementById('obs').value = '';
