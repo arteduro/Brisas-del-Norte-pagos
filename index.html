@@ -1199,7 +1199,7 @@
         }
 
         // ============================================
-        // FUNCIÓN AUXILIAR: Generar HTML de un recibo (para PDF)
+        // FUNCIÓN AUXILIAR: Generar HTML de un recibo (para WhatsApp)
         // ============================================
         function generarHTMLRecibo(recibo) {
             return `
@@ -1250,6 +1250,65 @@
                             <div style="margin-top: 3px; font-size: 0.6rem; color: #999;">CONDOMINIO BRISAS DEL NORTE</div>
                         </div>
                     </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // FUNCIÓN AUXILIAR: Generar HTML de un recibo completo (para impresión)
+        // ============================================
+        function generarHTMLReciboCompleto(recibo) {
+            return `
+                <div style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; padding: 10mm; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                            <img src="https://i.postimg.cc/2yb3MyY0/LOGO-BRISAS-DEL-NORTE.png" style="max-width: 120px; max-height: 50px; object-fit: contain;">
+                            <div>
+                                <h2 style="margin:0; font-size:1.2rem; line-height:1.2;">CONJUNTO RESIDENCIAL CERRADO BRISAS DEL NORTE</h2>
+                                <p style="margin:0; font-size:0.8rem;">NIT: 807.003.209-3 - Personería Jurídica No.1646 - Dic 17/1993</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f0f7ff; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                            <div><strong>No. Recibo:</strong> ${recibo.numero}</div>
+                            <div><strong>Fecha:</strong> ${recibo.fecha}</div>
+                            <div><strong>Mes:</strong> ${recibo.mes}</div>
+                            <div><strong>Recibimos de:</strong> ${recibo.propietario}</div>
+                            <div><strong>Dirección:</strong> ${recibo.direccion}</div>
+                            <div><strong>Método:</strong> ${recibo.metodo}</div>
+                        </div>
+                        
+                        <table style="width:100%; border-collapse:collapse; font-size:1rem; margin-bottom:15px;">
+                            <tr>
+                                <td style="padding:5px; border-bottom:1px solid #e0e7ef;"><strong>Observaciones:</strong></td>
+                                <td style="padding:5px; border-bottom:1px solid #e0e7ef;">${recibo.obs}</td>
+                            </tr>
+                        </table>
+                        
+                        <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0; font-size: 1.3rem; font-weight: bold; display: flex; justify-content: space-between; border-left: 4px solid #ffc107;">
+                            <span>TOTAL PAGADO:</span>
+                            <span>${recibo.monto}</span>
+                        </div>
+                        
+                        <div style="font-style: italic; text-align: center; color: #666; margin: 15px 0; font-size: 1rem;">
+                            ${recibo.letras}
+                        </div>
+                        
+                        <!-- FIRMA DEL ADMINISTRADOR - MÁS GRANDE PARA OCUPAR ESPACIO -->
+                        <div style="margin-top: 30px; text-align: center; border-top: 2px dashed #FFD700; padding-top: 15px;">
+                            <div style="font-size: 1.1rem; margin-bottom: 5px;">Recibí conforme,</div>
+                            <img src="https://i.postimg.cc/ZRGyLYfc/Firma-William-Torres.png" 
+                                 alt="Firma del Administrador"
+                                 style="max-width: 280px; max-height: 80px; object-fit: contain; margin: 0 auto 5px auto; display: block;">
+                            <div style="border-top: 2px solid #333; width: 280px; margin: 5px auto;"></div>
+                            <div style="font-weight: bold; font-size: 1.1rem;">WILLIAM TORRES</div>
+                            <div style="font-size: 1rem; color: #666;">Administrador</div>
+                            <div style="margin-top: 10px; font-size: 0.8rem; color: #999;">CONDOMINIO BRISAS DEL NORTE</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Espaciador al final para ocupar toda la hoja -->
+                    <div style="flex-grow: 1;"></div>
                 </div>
             `;
         }
@@ -1334,7 +1393,7 @@
         }
 
         // ============================================
-        // FUNCIÓN 2: PDF TAMAÑO CARTA CON RECIBO EN MEDIA HOJA (para imprimir)
+        // FUNCIÓN 2: PDF TAMAÑO CARTA - OCUPA TODA LA HOJA EN PANTALLA, PERO IMPRIME EN MEDIA HOJA
         // ============================================
         async function generarPDFImpresion() {
             const btn = event.target;
@@ -1342,7 +1401,7 @@
             btn.innerHTML = '⏳ GENERANDO...';
             
             try {
-                // Crear contenedor para un solo recibo (en la mitad superior)
+                // Crear contenedor para un solo recibo (pero que ocupe toda la hoja visualmente)
                 const contenedor = document.createElement('div');
                 contenedor.style.width = '216mm';
                 contenedor.style.height = '279mm';
@@ -1351,13 +1410,15 @@
                 contenedor.style.boxSizing = 'border-box';
                 contenedor.style.fontFamily = 'Arial, sans-serif';
                 contenedor.style.position = 'relative';
+                contenedor.style.display = 'flex';
+                contenedor.style.flexDirection = 'column';
+                contenedor.style.justifyContent = 'flex-start'; // Alinear arriba
 
-                // Recibo en la parte superior (ocupa 50% de la altura)
+                // Recibo que ocupará toda la altura (pero al imprimir, solo usará la mitad)
                 const reciboDiv = document.createElement('div');
-                reciboDiv.style.height = '50%';
-                reciboDiv.style.paddingBottom = '5mm';
-                reciboDiv.style.borderBottom = '2px dashed #aaa';
-                reciboDiv.style.marginBottom = '5mm';
+                reciboDiv.style.height = '100%'; // Ocupa toda la altura visualmente
+                reciboDiv.style.display = 'flex';
+                reciboDiv.style.flexDirection = 'column';
                 
                 // Obtener datos del recibo actual
                 const reciboActual = {
@@ -1372,11 +1433,8 @@
                     obs: document.getElementById('r_obs').innerText
                 };
                 
-                reciboDiv.innerHTML = generarHTMLRecibo(reciboActual);
+                reciboDiv.innerHTML = generarHTMLReciboCompleto(reciboActual);
                 contenedor.appendChild(reciboDiv);
-
-                // La mitad inferior queda vacía (sin contenido)
-                // No agregamos nada más, por defecto está en blanco
 
                 document.body.appendChild(contenedor);
                 await new Promise(resolve => setTimeout(resolve, 500));
