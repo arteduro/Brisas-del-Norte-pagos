@@ -403,26 +403,43 @@
             letter-spacing: 1px;
         }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-group { 
+            display: flex; 
+            gap: 10px; 
+            margin-top: 20px; 
+            flex-wrap: wrap;
+        }
         .btn-pdf { 
             flex: 1; 
             background: #28a745; 
             color: white; 
             border: none; 
-            padding: 10px; 
+            padding: 12px; 
             border-radius: 5px; 
             cursor: pointer; 
             font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .btn-pdf:hover {
+            background: #218838;
+            transform: translateY(-2px);
         }
         .btn-print { 
             flex: 1; 
             background: #17a2b8; 
             color: white; 
             border: none; 
-            padding: 10px; 
+            padding: 12px; 
             border-radius: 5px; 
             cursor: pointer; 
             font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .btn-print:hover {
+            background: #138496;
+            transform: translateY(-2px);
         }
 
         .hidden-fields {
@@ -442,6 +459,10 @@
             }
             .recibo-firma .linea-firma {
                 width: 250px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
             }
         }
     </style>
@@ -633,9 +654,14 @@
                         </div>
                     </div>
                     
+                    <!-- DOS BOTONES: UNO PARA WHATSAPP Y OTRO PARA IMPRIMIR -->
                     <div class="btn-group">
-                        <button class="btn-pdf" onclick="generarPDF()">📥 DESCARGAR PDF</button>
-                        <button class="btn-print" onclick="imprimirRecibo()">🖨️ IMPRIMIR</button>
+                        <button class="btn-pdf" onclick="generarPDFvisual()">
+                            📱 WhatsApp (solo recibo)
+                        </button>
+                        <button class="btn-print" onclick="generarPDFImpresion()">
+                            🖨️ Para imprimir (media hoja)
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1225,9 +1251,88 @@
         }
 
         // ============================================
-        // FUNCIÓN PARA GENERAR PDF - UN SOLO RECIBO EN MEDIA HOJA CARTA
+        // FUNCIÓN 1: PDF SOLO EL RECIBO (para WhatsApp/visualización)
         // ============================================
-        async function generarPDF() {
+        async function generarPDFvisual() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ GENERANDO...';
+            
+            try {
+                // Preparar el recibo para captura (solo el recibo, sin espacio extra)
+                const elementoRecibo = document.getElementById('recibo');
+                elementoRecibo.style.width = '350px';
+                elementoRecibo.style.maxWidth = '100%';
+                elementoRecibo.style.margin = '0 auto';
+                
+                // Capturar con alta calidad
+                const canvas = await html2canvas(elementoRecibo, { 
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    allowTaint: false,
+                    useCORS: true,
+                    windowWidth: 400
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Calcular altura dinámica (solo lo que ocupa el recibo)
+                const anchoDeseado = 80; // mm
+                const alturaCalculada = (canvas.height * anchoDeseado) / canvas.width;
+                
+                // Crear PDF con la altura exacta del recibo
+                const pdf = new jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: [anchoDeseado, alturaCalculada]
+                });
+                
+                // Agregar imagen ocupando todo el espacio
+                const imgWidth = anchoDeseado - 10; // márgenes
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
+                
+                // Nombre del archivo
+                const direccion = document.getElementById('direccion').value || 'SIN_DIRECCION';
+                const propietario = document.getElementById('propietario').value || 'DESCONOCIDO';
+                const mes = document.getElementById('mesPago').value || 'MES';
+                
+                const direccionLimpia = direccion
+                    .trim()
+                    .replace(/\s+/g, ' ')
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/\s+/g, '_');
+                
+                const propietarioLimpio = propietario
+                    .trim()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/\s+/g, '_');
+                
+                const nombreArchivo = `${direccionLimpia}_${propietarioLimpio}_${mes}.pdf`;
+                
+                pdf.save(nombreArchivo);
+                
+                const mensajeDiv = document.getElementById('mensaje');
+                mensajeDiv.className = 'message success';
+                mensajeDiv.innerHTML = `✅ PDF listo para WhatsApp: ${nombreArchivo}`;
+                mensajeDiv.style.display = 'block';
+                setTimeout(() => mensajeDiv.style.display = 'none', 3000);
+                
+            } catch (e) {
+                alert('Error al generar PDF: ' + e.message);
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '📱 WhatsApp (solo recibo)';
+        }
+
+        // ============================================
+        // FUNCIÓN 2: PDF TAMAÑO CARTA CON RECIBO EN MEDIA HOJA (para imprimir)
+        // ============================================
+        async function generarPDFImpresion() {
             const btn = event.target;
             btn.disabled = true;
             btn.innerHTML = '⏳ GENERANDO...';
@@ -1299,7 +1404,7 @@
                 const nombre = limpiarNombre(reciboActual.propietario);
                 const dir = limpiarNombre(reciboActual.direccion);
                 
-                const nombreArchivo = `${reciboActual.direccion.replace(/\s+/g, '_')}_${nombre}_${reciboActual.mes}.pdf`;
+                const nombreArchivo = `IMPRIMIR_${reciboActual.direccion.replace(/\s+/g, '_')}_${nombre}_${reciboActual.mes}.pdf`;
                 
                 pdf.save(nombreArchivo);
                 
@@ -1307,7 +1412,7 @@
                 
                 const mensajeDiv = document.getElementById('mensaje');
                 mensajeDiv.className = 'message success';
-                mensajeDiv.innerHTML = `✅ Recibo ${reciboActual.numero} generado (media hoja carta)`;
+                mensajeDiv.innerHTML = `✅ PDF listo para imprimir: ${nombreArchivo}`;
                 mensajeDiv.style.display = 'block';
                 setTimeout(() => mensajeDiv.style.display = 'none', 3000);
                 
@@ -1316,7 +1421,7 @@
             }
             
             btn.disabled = false;
-            btn.innerHTML = '📥 DESCARGAR PDF';
+            btn.innerHTML = '🖨️ Para imprimir (media hoja)';
         }
 
         function imprimirRecibo() {
