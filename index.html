@@ -494,11 +494,11 @@
                     <h2>REGISTRO DE PAGOS</h2>
                 </div>
                 <div class="card-body">
-                    <!-- SELECTOR DE PROPIETARIO -->
+                    <!-- SELECTOR DE PROPIETARIO - AHORA CON DIRECCIÓN PRIMERO -->
                     <div class="selector-principal">
-                        <label>👤 SELECCIONE EL PROPIETARIO</label>
+                        <label>🏠 SELECCIONE LA DIRECCIÓN (MZ-XX INT-XX)</label>
                         <select id="selectorPropietario" onchange="cargarDatosPropietario()">
-                            <option value="">-- Seleccione un propietario --</option>
+                            <option value="">-- Seleccione una dirección --</option>
                         </select>
                     </div>
 
@@ -1058,11 +1058,14 @@
         });
 
         // ============================================
-        // LLENAR SELECTOR DE PROPIETARIOS
+        // LLENAR SELECTOR DE PROPIETARIOS - CON DIRECCIÓN PRIMERO
         // ============================================
         function llenarSelectorPropietarios() {
             console.log('📋 Llenando selector de propietarios...');
             const select = document.getElementById('selectorPropietario');
+            
+            // Limpiar opciones existentes
+            select.innerHTML = '<option value="">-- Seleccione una dirección --</option>';
             
             const direcciones = Object.keys(propietarios).sort();
             
@@ -1070,10 +1073,11 @@
                 const propietario = propietarios[direccion];
                 const option = document.createElement('option');
                 option.value = direccion;
-                option.textContent = `${propietario} - ${direccion}`;
+                // Formato invertido: DIRECCIÓN - NOMBRE
+                option.textContent = `${direccion} - ${propietario}`;
                 select.appendChild(option);
             }
-            console.log(`✅ ${direcciones.length} propietarios cargados`);
+            console.log(`✅ ${direcciones.length} propietarios cargados en formato: DIRECCIÓN - NOMBRE`);
         }
 
         // ============================================
