@@ -446,24 +446,6 @@
             display: none;
         }
 
-        /* Estilos para la línea de corte en impresión */
-        .linea-corte {
-            text-align: center;
-            margin: 5px 0;
-            font-size: 0.8rem;
-            color: #999;
-            font-style: italic;
-            border-top: 2px dashed #ccc;
-            padding-top: 5px;
-        }
-        .linea-corte span {
-            background: #f8fafd;
-            padding: 0 10px;
-            display: inline-block;
-            position: relative;
-            top: -12px;
-        }
-
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
             .header { flex-direction: column; text-align: center; }
@@ -1147,6 +1129,9 @@
             return "R-2026-0001";
         }
 
+        // ============================================
+        // FUNCIÓN GENERAR RECIBO - CORREGIDA (limpia observaciones)
+        // ============================================
         function generarRecibo() {
             console.log('📝 Generando recibo...');
             
@@ -1174,6 +1159,24 @@
             const numeroRecibo = consecutivoActual;
             const mesSeleccionado = document.getElementById('mesPago').value;
             
+            // ============================================
+            // LIMPIEZA DE OBSERVACIONES - ELIMINA CARACTERES EXTRAÑOS
+            // ============================================
+            let obsRaw = document.getElementById('obs').value || '';
+            
+            // Eliminar cualquier carácter que no sea letras (con acentos), números, espacios, comas, puntos, guiones
+            // Esto elimina caracteres como "数学" y otros caracteres especiales
+            const obsLimpia = obsRaw
+                .replace(/[^\w\s\.,\-\u00C0-\u017F]/g, ' ')  // Permitir letras con acentos
+                .replace(/\s+/g, ' ')                          // Unificar espacios múltiples
+                .trim();                                       // Eliminar espacios al inicio y final
+            
+            // Si quedó vacío después de limpiar, poner "Ninguna"
+            const observacionesFinal = obsLimpia || 'Ninguna';
+            
+            console.log('📝 Observaciones originales:', obsRaw);
+            console.log('📝 Observaciones limpias:', observacionesFinal);
+            
             document.getElementById('r_numero').innerText = numeroRecibo;
             document.getElementById('r_fecha').innerText = document.getElementById('fecha').value;
             document.getElementById('r_mes').innerText = mesSeleccionado;
@@ -1182,7 +1185,7 @@
             document.getElementById('r_monto').innerText = '$ ' + monto.toLocaleString('es-CO');
             document.getElementById('r_letras').innerText = numeroALetras(monto);
             document.getElementById('r_metodo').innerText = document.getElementById('metodo').value;
-            document.getElementById('r_obs').innerText = document.getElementById('obs').value || 'Ninguna';
+            document.getElementById('r_obs').innerText = observacionesFinal;
             
             console.log('✅ Recibo generado con número:', numeroRecibo);
             
@@ -1198,7 +1201,7 @@
                 monto: '$ ' + monto.toLocaleString('es-CO'),
                 letras: numeroALetras(monto),
                 metodo: document.getElementById('metodo').value,
-                obs: document.getElementById('obs').value || 'Ninguna'
+                obs: observacionesFinal
             };
         }
 
@@ -1220,6 +1223,12 @@
         // FUNCIÓN AUXILIAR: Generar HTML de un recibo para impresión (MEDIA HOJA)
         // ============================================
         function generarHTMLReciboImpresion(recibo) {
+            // Asegurar que las observaciones estén limpias
+            const obsLimpia = (recibo.obs || 'Ninguna')
+                .replace(/[^\w\s\.,\-\u00C0-\u017F]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim() || 'Ninguna';
+            
             return `
                 <div style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; padding: 10mm 12mm; box-sizing: border-box; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
@@ -1240,12 +1249,11 @@
                             <div><strong>Método:</strong> ${recibo.metodo}</div>
                         </div>
                         
-                        <table style="width:100%; border-collapse:collapse; font-size:0.95rem; margin-bottom: 15px;">
-                            <tr>
-                                <td style="padding:5px; border-bottom:1px solid #e0e7ef;"><strong>Observaciones:</strong>数学
-                                <td style="padding:5px; border-bottom:1px solid #e0e7ef;">${recibo.obs}数学
-                            </tr>
-                        </table>
+                        <div style="width:100%; margin-bottom: 15px;">
+                            <div style="padding: 5px; border-bottom: 1px solid #e0e7ef;">
+                                <strong>Observaciones:</strong> ${obsLimpia}
+                            </div>
+                        </div>
                         
                         <div style="background: #fff3cd; padding: 12px; border-radius: 5px; margin: 20px 0; font-size: 1.2rem; font-weight: bold; display: flex; justify-content: space-between; border-left: 4px solid #ffc107;">
                             <span>TOTAL PAGADO:</span>
@@ -1377,25 +1385,22 @@
                 mitadSuperior.innerHTML = generarHTMLReciboImpresion(reciboActual);
                 contenedor.appendChild(mitadSuperior);
                 
-                // Línea de corte punteada con indicador
+                // Línea de corte punteada - SOLO LÍNEA, SIN TEXTO NI ICONO
                 const lineaCorte = document.createElement('div');
                 lineaCorte.style.height = '10px';
                 lineaCorte.style.width = '100%';
                 lineaCorte.style.textAlign = 'center';
-                lineaCorte.style.position = 'relative';
                 lineaCorte.style.margin = '0';
                 lineaCorte.style.padding = '0';
                 lineaCorte.style.backgroundColor = 'white';
                 lineaCorte.innerHTML = `
-                    <div style="border-top: 2px dashed #999; width: 80%; margin: 0 auto; position: relative;">
-                        <span style="background: white; padding: 0 10px; position: relative; top: -10px; font-size: 9px; color: #666;">✂️ CORTE AQUÍ ✂️</span>
-                    </div>
+                    <hr style="border: none; border-top: 2px dashed #ccc; width: 80%; margin: 0 auto;">
                 `;
                 contenedor.appendChild(lineaCorte);
                 
                 // Mitad inferior (resto de la altura) - VACÍA (en blanco)
                 const mitadInferior = document.createElement('div');
-                mitadInferior.style.height = 'calc(50% - 10px)'; // Restar altura de la línea de corte
+                mitadInferior.style.height = 'calc(50% - 10px)';
                 mitadInferior.style.width = '100%';
                 mitadInferior.style.backgroundColor = 'white';
                 mitadInferior.style.boxSizing = 'border-box';
@@ -1620,6 +1625,9 @@
             console.log('📊 Recibos guardados en localStorage:', recibos.length);
         }
 
+        // ============================================
+        // PROCESAR PAGO - CORREGIDO (limpia observaciones)
+        // ============================================
         async function procesarPago() {
             if (enviando) return;
             
@@ -1661,6 +1669,13 @@
                     throw new Error('No se pudo generar el recibo');
                 }
                 
+                // Limpiar observaciones antes de guardar
+                const obsRaw = document.getElementById('obs').value || '';
+                const obsLimpia = obsRaw
+                    .replace(/[^\w\s\.,\-\u00C0-\u017F]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim() || '';
+                
                 const datosPago = {
                     direccion: direccion,
                     propietario: propietario,
@@ -1668,7 +1683,7 @@
                     fecha: document.getElementById('fecha').value,
                     mes: document.getElementById('mesPago').value,
                     metodo: document.getElementById('metodo').value,
-                    obs: document.getElementById('obs').value || ''
+                    obs: obsLimpia
                 };
                 
                 console.log('📤 Enviando datos:', datosPago);
